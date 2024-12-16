@@ -21,6 +21,7 @@ on:
           - vendor
           - current
           - edge
+          - YAN         
       RELEASE:  
         description: 'Release name' 
         default: 'bookworm'
