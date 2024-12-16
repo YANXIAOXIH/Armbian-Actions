@@ -39,6 +39,15 @@ case $BRANCH in
 		LINUXFAMILY=rk35xx
 		;;
 
+	YAN)
+		BOOTDIR='u-boot-rockchip64'
+		declare -g KERNEL_MAJOR_MINOR="6.1"    # Major and minor versions of this kernel.
+		declare -g -i KERNEL_GIT_CACHE_TTL=120 # 2 minutes; this is a high-traffic repo
+		KERNELSOURCE='https://github.com/YANXIAOXIH/linux-rockchip.git'
+		KERNELBRANCH='branch:rk-6.1-rkr4.1'
+		KERNELPATCHDIR='rk35xx-vendor-6.1'
+		;;
+
 	current)
 		# Branch based on a stable kernel release (will stay on the next LTS kernel release once released, 6.12? LTS)
 		LINUXFAMILY=rockchip-rk3588
