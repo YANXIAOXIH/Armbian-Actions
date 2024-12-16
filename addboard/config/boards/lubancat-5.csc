@@ -1,8 +1,14 @@
 BOARD_NAME="LubanCat 5"
-BOARD_MAKER="LubanCat"
-UBOOT_PACKAGE="u-boot-lubancat-rk3588"
-DEVICE_TREE_FILE="rk3588-lubancat-5.dtb"
-OVERLAY_PREFIX="rk3588"
+BOARDFAMILY="rockchip-rk3588"
+BOARD_MAINTAINER=""
+BOOTCONFIG="SOM3588_defconfig"
+KERNEL_TARGET="vendor,current,edge"
+FULL_DESKTOP="yes"
+BOOT_LOGO="desktop"
+BOOT_FDT_FILE="rockchip/rk3588-lubancat-5.dtb"
+BOOT_SCENARIO="spl-blobs"
+BOOT_SOC="rk3588"
+IMAGE_PARTITION_TABLE="gpt"
 function config_image_hook__lubancat-5() {
     # Create udev audio rules
     echo 'SUBSYSTEM=="sound", ENV{ID_PATH}=="platform-hdmi0-sound", ENV{SOUND_DESCRIPTION}="HDMI0 Audio"' > ${chroot_dir}/etc/udev/rules.d/90-naming-audios.rules
