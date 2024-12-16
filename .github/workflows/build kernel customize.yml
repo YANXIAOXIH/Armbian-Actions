@@ -6,10 +6,11 @@ on:
       BOARD:  
         description: 'Board type'  
         required: true 
-        default: 'cyber-aib-rk3588'
+        default: 'lubancat-5'
         type: choice
         options:
           - cyber-aib-rk3588
+          - lubancat-5
       BRANCH:  
         description: 'Armbian kernel branch'  
         default: 'current'  
