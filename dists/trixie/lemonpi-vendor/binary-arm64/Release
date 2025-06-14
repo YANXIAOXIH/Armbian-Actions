@@ -1,0 +1,5 @@
+Component: lemonpi-vendor
+Origin: My Armbian Builds
+Label: My Armbian
+Architecture: arm64
+Description: Custom APT repository for my Armbian builds

@@ -1,0 +1,32 @@
+Origin: My Armbian Builds
+Label: My Armbian
+Codename: oracular
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor
+Description: Custom APT repository for my Armbian builds
+SignWith: F3C94127D8BD55D27C5DC304084094EBE1B608A2
+
+Origin: My Armbian Builds
+Label: My Armbian
+Codename: plucky
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor
+Description: Custom APT repository for my Armbian builds
+SignWith: F3C94127D8BD55D27C5DC304084094EBE1B608A2
+
+Origin: My Armbian Builds
+Label: My Armbian
+Codename: bookworm
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor
+Description: Custom APT repository for my Armbian builds
+SignWith: F3C94127D8BD55D27C5DC304084094EBE1B608A2
+
+Origin: My Armbian Builds
+Label: My Armbian
+Codename: trixie
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor
+Description: Custom APT repository for my Armbian builds
+SignWith: F3C94127D8BD55D27C5DC304084094EBE1B608A2
+
