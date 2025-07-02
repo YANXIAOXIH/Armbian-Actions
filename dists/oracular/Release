@@ -1,0 +1,55 @@
+Origin: Armbian
+Label: Armbian
+Codename: oracular
+Date: Wed, 02 Jul 2025 08:15:17 UTC
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor
+Description: Custom APT repository for Armbian
+MD5Sum:
+ d41d8cd98f00b204e9800998ecf8427e 0 main/binary-arm64/Packages
+ 7029066c27ac6f5ef18d660d5741979a 20 main/binary-arm64/Packages.gz
+ 9a463abafe34882a4ba695a50909e5dd 114 main/binary-arm64/Release
+ 4439599ae5a9d536e9bb01b288a3d4df 7253 lemonpi-edge/binary-arm64/Packages
+ 5c74a60e50ea57fa6c6ad6c20c362fd9 2364 lemonpi-edge/binary-arm64/Packages.gz
+ 2e703adc0cb204adb96b6fb1654c017c 122 lemonpi-edge/binary-arm64/Release
+ 18507e1e94578090a220e01e1a154855 7199 lemonpi-vendor/binary-arm64/Packages
+ 1b4794af3037635e22e706f83f24c4d8 2353 lemonpi-vendor/binary-arm64/Packages.gz
+ a82df8a5aef532b26812a7594f4a9f08 124 lemonpi-vendor/binary-arm64/Release
+ b4059d25fb3a4c2c411bda1ddf850e33 7321 som3588-cat-edge/binary-arm64/Packages
+ 6f895bd4f00e6b7e80b9ad2af724c8d9 2371 som3588-cat-edge/binary-arm64/Packages.gz
+ 1f6534305b2ef16980fd70fbcf997a82 126 som3588-cat-edge/binary-arm64/Release
+ 9a484f26b0b432318ecaa7b72fe241ab 7267 som3588-cat-vendor/binary-arm64/Packages
+ df123f298be166d76c0d44a9582ce3b0 2357 som3588-cat-vendor/binary-arm64/Packages.gz
+ 31edc0b4b1bb45a4bfabdcef7408ff9f 128 som3588-cat-vendor/binary-arm64/Release
+SHA1:
+ da39a3ee5e6b4b0d3255bfef95601890afd80709 0 main/binary-arm64/Packages
+ 46c6643f07aa7f6bfe7118de926b86defc5087c4 20 main/binary-arm64/Packages.gz
+ 8b98a0719036817f16a37f5bbe4598e1374fc1de 114 main/binary-arm64/Release
+ d4a6bfe06f79261c8fdb3a5fdccf1aa208a11f4e 7253 lemonpi-edge/binary-arm64/Packages
+ 226b63e13e838b8d8d3871015fb8998be88c1f9d 2364 lemonpi-edge/binary-arm64/Packages.gz
+ a93c47f493010c613cdf7c2193fbbbf2a2bb6f1c 122 lemonpi-edge/binary-arm64/Release
+ b8608d9952922d5a60a532b9dcf8da1885b52706 7199 lemonpi-vendor/binary-arm64/Packages
+ f18dcef7c4834c7cf8230fb2a3c9a92e8d660461 2353 lemonpi-vendor/binary-arm64/Packages.gz
+ 687511b87ee51ad0b1e701cbc47f77c97493a2f4 124 lemonpi-vendor/binary-arm64/Release
+ 23fb285a7c1451602049d298c4226d1522d6459c 7321 som3588-cat-edge/binary-arm64/Packages
+ 75c009beca25008df60d9bb34775b1cadfb7c9d0 2371 som3588-cat-edge/binary-arm64/Packages.gz
+ 3a1b32ffcdd089be5d9d1a9d094dcbeeb76acf28 126 som3588-cat-edge/binary-arm64/Release
+ da2137e2ecccfdf817c634a1791059b92778793a 7267 som3588-cat-vendor/binary-arm64/Packages
+ f14aad239f23a0f436d12e81b16c0ff8c1e22a97 2357 som3588-cat-vendor/binary-arm64/Packages.gz
+ 6733e5ce9b9c4fa1ecfd773795008cc60a72b9a7 128 som3588-cat-vendor/binary-arm64/Release
+SHA256:
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 main/binary-arm64/Packages
+ 59869db34853933b239f1e2219cf7d431da006aa919635478511fabbfc8849d2 20 main/binary-arm64/Packages.gz
+ 90f66ac7e53f55062e16abc59cd67cdb81b1cfbfbb3567b24e7ecf75720cf9ec 114 main/binary-arm64/Release
+ 99c0dd1830b483a435b98ad6f669249dadd6c96fea3f4ebaf344702bd2336eb8 7253 lemonpi-edge/binary-arm64/Packages
+ 885138c1d52b77eb755f458b4e74fd7ead01cec83aaa1b2bcaad543a09252b3e 2364 lemonpi-edge/binary-arm64/Packages.gz
+ afe31e80b07190a87a39eceadbc11bbcf96e672d3e2dde12e33d68aa16551cf3 122 lemonpi-edge/binary-arm64/Release
+ b8abb917bff8072f08e2a094f4dd39fb072337adfc8ac274de39a4c0f594a6ae 7199 lemonpi-vendor/binary-arm64/Packages
+ e9e7758d4c9d8e5afec73908dfc0c75b77e5c444ec80805b939dd27435b6159a 2353 lemonpi-vendor/binary-arm64/Packages.gz
+ 2f5025d84cdeab4c2cd64fc5b5549cba3265dc8259c70803f880776356c66ae8 124 lemonpi-vendor/binary-arm64/Release
+ 028adbf124561c050afb68476da2be5aa5c936eeda96e6734883c75ea41284b5 7321 som3588-cat-edge/binary-arm64/Packages
+ 4e23ddd25f8fc87cd099c86e91212e74398f035499ff6e55e44579e860577d5d 2371 som3588-cat-edge/binary-arm64/Packages.gz
+ 11a44d198b9e562aa5494160ca1244ade12f3b19b2d86c3e5a30434a37500f15 126 som3588-cat-edge/binary-arm64/Release
+ e25a2262f955c7461fdd57e7c3927eccc0aa0e462a6cc9e933e987e33339dfe1 7267 som3588-cat-vendor/binary-arm64/Packages
+ 6fd49b883bd9b8266165b76132a785339bdfaa671321016fb0891e9953fc51aa 2357 som3588-cat-vendor/binary-arm64/Packages.gz
+ c45b8924d6b1196ee67da5e6429dab8d10d3eed7d6b42bc305cd2b019f8099cf 128 som3588-cat-vendor/binary-arm64/Release
