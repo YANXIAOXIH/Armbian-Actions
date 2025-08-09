@@ -1,0 +1,136 @@
+Package: armbian-bsp-cli-som3588-cat-vendor
+Version: 25.08.0-trunk
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Recommends: bsdutils, parted, util-linux, toilet
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-vendor/a/armbian-bsp-cli-som3588-cat-vendor/armbian-bsp-cli-som3588-cat-vendor_25.08.0-trunk_arm64.deb
+Size: 434212
+SHA256: 95c8f0108f8a3a527eff355884c3a7d4859490ffbbf1601e8ba68fd76ba8e61d
+SHA1: 7bc232736afedcd1f6aee410a7c07b1cbd94883d
+MD5sum: 8a753d7e83c006cc74f799558b3dec25
+Description: Armbian CLI BSP for board 'som3588-cat' branch 'vendor' 
+Installed-Size: 1414
+Armbian-Original-Hash: 1-PCee86-Vae5f-H2670-B1e5d-R756d
+Depends: bash, linux-base, u-boot-tools, initramfs-tools, lsb-release, fping, device-tree-compiler, base-files (>= 25.08.0-trunk)
+Replaces: zram-config, armbian-bsp-cli-som3588-cat (<< 25.08.0-trunk)
+Breaks: armbian-bsp-cli-som3588-cat (<< 25.08.0-trunk)
+Provides: armbian-bsp-cli
+
+Package: armbian-firmware
+Version: 25.08.0-trunk
+Architecture: all
+Maintainer: Armbian Linux <info@armbian.com>
+Conflicts: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Provides: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-vendor/a/armbian-firmware/armbian-firmware_25.08.0-trunk_all.deb
+Size: 95947964
+SHA256: b93800a10458776e6cb920899e7f76abd18cd38a4eecdef0a568197bfdb73c9d
+SHA1: cdb3863c8bf37a4712700608ec8b512f927a7933
+MD5sum: 69b714eab8b8c270c696690b9cfce147
+Description: Armbian - Linux firmware
+Installed-Size: 300925
+Armbian-Original-Hash: 1-SA105f-B6c7f-R448a
+
+Package: linux-dtb-vendor-rk35xx
+Version: 25.08.0-trunk
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-dtb, linux-dtb-armbian, armbian-vendor
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-vendor/l/linux-dtb-vendor-rk35xx/linux-dtb-vendor-rk35xx_25.08.0-trunk_arm64.deb
+Size: 2423404
+SHA256: 1297f5eafc9b52bbfb4ec89ba79aa48f64459e3bf0650aad574240133d9ae0cc
+SHA1: 417d2c40569fb2e2da0bcb6ddc1ee55d643bd9b9
+MD5sum: 08960a54d3ac158e0a25636cc83f26f5
+Description: Armbian Linux vendor DTBs in /boot/dtb-6.1.115-vendor-rk35xx
+ This package contains device tree blobs from the Linux kernel, version 6.1.115-vendor-rk35xx
+ version "6.1.115" git revision "623b4385c236eed229af0cf818f89c8a8e95da01" codename "Curry Ramen" drivers hash "0b5d7236_c3161803" patches hash "b821109f8dddcf7a" .config hash "26e69fe0d425ec0b" .config hook hash "eb9fa70e7174086e" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "0d4a2703baf75bba"
+Installed-Size: 84056
+Armbian-Original-Hash: 6.1.115-S623b-D0b5d-Pb821-C26e6Heb9f-HK01ba-Vc222-B0d4a-R448a
+
+Package: linux-headers-vendor-rk35xx
+Version: 25.08.0-trunk
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-headers, linux-headers-armbian, armbian-vendor
+Depends: make, gcc, libc6-dev, bison, flex, libssl-dev, libelf-dev
+Priority: optional
+Section: devel
+Filename: pool/som3588-cat-vendor/l/linux-headers-vendor-rk35xx/linux-headers-vendor-rk35xx_25.08.0-trunk_arm64.deb
+Size: 14011608
+SHA256: b554377475f8453a6503eb1fed75ca1b326cd8af67ea1b22c8c01a8533fae19c
+SHA1: c033899f6feb67a69b4b395b8c14fd1d805af95b
+MD5sum: 309c4306c9c77fb4e950187ac537638f
+Description: Armbian Linux vendor headers 6.1.115-vendor-rk35xx
+ This package provides kernel header files for 6.1.115-vendor-rk35xx
+ .
+ This is useful for DKMS and building of external modules.
+ version "6.1.115" git revision "623b4385c236eed229af0cf818f89c8a8e95da01" codename "Curry Ramen" drivers hash "0b5d7236_c3161803" patches hash "b821109f8dddcf7a" .config hash "26e69fe0d425ec0b" .config hook hash "eb9fa70e7174086e" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "0d4a2703baf75bba"
+Installed-Size: 75054
+Armbian-Original-Hash: 6.1.115-S623b-D0b5d-Pb821-C26e6Heb9f-HK01ba-Vc222-B0d4a-R448a
+
+Package: linux-image-vendor-rk35xx
+Version: 25.08.0-trunk
+Source: linux-6.1.115
+Armbian-Kernel-Version: 6.1.115
+Armbian-Kernel-Version-Family: 6.1.115-vendor-rk35xx
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-image, linux-image-armbian, armbian-vendor
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-vendor/l/linux-6.1.115/linux-image-vendor-rk35xx_25.08.0-trunk_arm64.deb
+Size: 37308396
+SHA256: df7a6a2a9b95d892f0eb6de713843d17da755ea20c37c19be745733cc589b435
+SHA1: b149bf7989aecdc636cac2d97a91a3f3e0fbd93a
+MD5sum: 364c59dfc9b9e115e2846d6b1012ec03
+Description: Armbian Linux vendor kernel image 6.1.115-vendor-rk35xx
+ This package contains the Linux kernel, modules and corresponding other files.
+ version "6.1.115" git revision "623b4385c236eed229af0cf818f89c8a8e95da01" codename "Curry Ramen" drivers hash "0b5d7236_c3161803" patches hash "b821109f8dddcf7a" .config hash "26e69fe0d425ec0b" .config hook hash "eb9fa70e7174086e" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "0d4a2703baf75bba"
+Installed-Size: 272883
+Armbian-Original-Hash: 6.1.115-S623b-D0b5d-Pb821-C26e6Heb9f-HK01ba-Vc222-B0d4a-R448a
+
+Package: linux-libc-dev-vendor-rk35xx
+Version: 25.08.0-trunk
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-libc-dev
+Conflicts: linux-libc-dev
+Architecture: arm64
+Priority: optional
+Section: devel
+Filename: pool/som3588-cat-vendor/l/linux-libc-dev-vendor-rk35xx/linux-libc-dev-vendor-rk35xx_25.08.0-trunk_arm64.deb
+Size: 1340088
+SHA256: b9b5f840cf9806bf8ab6401504d8ab643d43bcfc515a8579b940bfbf46becb5f
+SHA1: 2ce6b77862243c02e70277a64f080b56d9e7e1ca
+MD5sum: c0619d059c55d111c5cc22e5b29716ea
+Description: Armbian Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system libraries.
+Multi-Arch: same
+Installed-Size: 6497
+Armbian-Original-Hash: 6.1.115-S623b-D0b5d-Pb821-C26e6Heb9f-HK01ba-Vc222-B0d4a-R448a
+
+Package: linux-u-boot-som3588-cat-vendor
+Version: 25.08.0-trunk
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: armbian-u-boot
+Replaces: armbian-u-boot
+Conflicts: armbian-u-boot, u-boot-sunxi
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-vendor/l/linux-u-boot-som3588-cat-vendor/linux-u-boot-som3588-cat-vendor_25.08.0-trunk_arm64.deb
+Size: 1177184
+SHA256: e6f75af5d9286e3ce12230097552d4693bd5b1d7806f34162cd1d5c839243a27
+SHA1: a2e5f475747c69f914825a7c7e63bd6f63ccc7fc
+MD5sum: d6a935832e595cdebcea2e994e067607
+Description: Das U-Boot for som3588-cat
+ version "2017.09" git revision "45aa10f3ced32f45bb336fb38925f14ac924c98e" patches hash "4c6a5f0d0b188851" Extension hooks hash "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b" uboot functions hash "f9423d4d46d641db72d8fe0d40b68aae3c8c8f6e8e2b90cc95b731ccf0b955c5" variables hash "232bd26746537dffc701045e3ae0b6b124655453da1ba9c14d08c7dfca809ebb" framework bash hash "b7035b95c8004ab0"
+Installed-Size: 18425
+Armbian-Original-Hash: 2017.09-S45aa-P4c6a-Hc48d-V232b-Bb703-R448a
+
