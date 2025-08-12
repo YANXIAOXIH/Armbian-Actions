@@ -1,0 +1,136 @@
+Package: armbian-bsp-cli-lemonpi-edge
+Version: 25.11.0-trunk
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Recommends: bsdutils, parted, util-linux, toilet
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-edge/a/armbian-bsp-cli-lemonpi-edge/armbian-bsp-cli-lemonpi-edge_25.11.0-trunk_arm64.deb
+Size: 433852
+SHA256: 08fb92da16ac28b8d4c1d7d4f3d1f064ced587297bfcb77ab4370c0a3fa88c69
+SHA1: fbfef071ad56d949d402a030f0408d24c1b0d853
+MD5sum: 906936e253ed0815151b85d95ef772b6
+Description: Armbian CLI BSP for board 'lemonpi' branch 'edge' 
+Installed-Size: 1414
+Armbian-Original-Hash: 1-PCee86-V8323-H2670-B1e5d-R756d
+Depends: bash, linux-base, u-boot-tools, initramfs-tools, lsb-release, fping, device-tree-compiler, base-files (>= 25.11.0-trunk)
+Replaces: zram-config, armbian-bsp-cli-lemonpi (<< 25.11.0-trunk)
+Breaks: armbian-bsp-cli-lemonpi (<< 25.11.0-trunk)
+Provides: armbian-bsp-cli
+
+Package: armbian-firmware
+Version: 25.11.0-trunk
+Architecture: all
+Maintainer: Armbian Linux <info@armbian.com>
+Conflicts: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Provides: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-edge/a/armbian-firmware/armbian-firmware_25.11.0-trunk_all.deb
+Size: 95947444
+SHA256: 16394031652bf49b245d9f5e9eb5a31c5324b8686de3290433531469ada3c0de
+SHA1: 5946e65368ec2f7252daaa4973db48e0162fed68
+MD5sum: 2f5d21d67d0ff1b8ce3f0e030c899cc7
+Description: Armbian - Linux firmware
+Installed-Size: 300925
+Armbian-Original-Hash: 1-SA105f-B6c7f-R448a
+
+Package: linux-dtb-edge-rockchip64
+Version: 25.11.0-trunk
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-dtb, linux-dtb-armbian, armbian-edge
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-edge/l/linux-dtb-edge-rockchip64/linux-dtb-edge-rockchip64_25.11.0-trunk_arm64.deb
+Size: 913592
+SHA256: f934ba082844c3cc93a942a4cf6ee5153b914d95d9874c90e239f360bca960ad
+SHA1: 906b6d1a8794f7e6f3566b1e6b8738013b41548f
+MD5sum: 542b9f37c242613c0bac6ab4f18cc112
+Description: Armbian Linux edge DTBs in /boot/dtb-6.16.0-edge-rockchip64
+ This package contains device tree blobs from the Linux kernel, version 6.16.0-edge-rockchip64
+ version "6.16.0" git revision "038d61fd642278bab63ee8ef722c50d10ab01e8f" codename "Baby Opossum Posse" drivers hash "0b5d7236_c3161803" patches hash "510647ffeae07511" .config hash "01c22e5170f5540d" .config hook hash "3d80c515b3e320ac" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "d200829f3fc8e18d"
+Installed-Size: 23664
+Armbian-Original-Hash: 6.16.0-S038d-D0b5d-P5106-C01c2H3d80-HK01ba-Vc222-Bd200-R448a
+
+Package: linux-headers-edge-rockchip64
+Version: 25.11.0-trunk
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-headers, linux-headers-armbian, armbian-edge
+Depends: make, gcc, libc6-dev, bison, flex, libssl-dev, libelf-dev
+Priority: optional
+Section: devel
+Filename: pool/lemonpi-edge/l/linux-headers-edge-rockchip64/linux-headers-edge-rockchip64_25.11.0-trunk_arm64.deb
+Size: 15125008
+SHA256: f638e862ba58e4ed077d6c2cdd57987494026f9921d29114ab653b950f71f758
+SHA1: b2551a16fe4a789e94f9727ca6dfd7a4ee516ff5
+MD5sum: 8ac4927470f3e4dffc1c88d5efc4b68a
+Description: Armbian Linux edge headers 6.16.0-edge-rockchip64
+ This package provides kernel header files for 6.16.0-edge-rockchip64
+ .
+ This is useful for DKMS and building of external modules.
+ version "6.16.0" git revision "038d61fd642278bab63ee8ef722c50d10ab01e8f" codename "Baby Opossum Posse" drivers hash "0b5d7236_c3161803" patches hash "510647ffeae07511" .config hash "01c22e5170f5540d" .config hook hash "3d80c515b3e320ac" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "d200829f3fc8e18d"
+Installed-Size: 82400
+Armbian-Original-Hash: 6.16.0-S038d-D0b5d-P5106-C01c2H3d80-HK01ba-Vc222-Bd200-R448a
+
+Package: linux-image-edge-rockchip64
+Version: 25.11.0-trunk
+Source: linux-6.16.0
+Armbian-Kernel-Version: 6.16.0
+Armbian-Kernel-Version-Family: 6.16.0-edge-rockchip64
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-image, linux-image-armbian, armbian-edge, wireguard-modules
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-edge/l/linux-6.16.0/linux-image-edge-rockchip64_25.11.0-trunk_arm64.deb
+Size: 48760072
+SHA256: fea2fd4fb299aef9b26c44f47c8dce2d260bbd5a97a7d6558b2538f452c00fbb
+SHA1: d143c11584adaadca78f692028d9f1031795a8bc
+MD5sum: d8302f28ff07d4f4a35cfe31f8939431
+Description: Armbian Linux edge kernel image 6.16.0-edge-rockchip64
+ This package contains the Linux kernel, modules and corresponding other files.
+ version "6.16.0" git revision "038d61fd642278bab63ee8ef722c50d10ab01e8f" codename "Baby Opossum Posse" drivers hash "0b5d7236_c3161803" patches hash "510647ffeae07511" .config hash "01c22e5170f5540d" .config hook hash "3d80c515b3e320ac" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "d200829f3fc8e18d"
+Installed-Size: 275110
+Armbian-Original-Hash: 6.16.0-S038d-D0b5d-P5106-C01c2H3d80-HK01ba-Vc222-Bd200-R448a
+
+Package: linux-libc-dev-edge-rockchip64
+Version: 25.11.0-trunk
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-libc-dev
+Conflicts: linux-libc-dev
+Architecture: arm64
+Priority: optional
+Section: devel
+Filename: pool/lemonpi-edge/l/linux-libc-dev-edge-rockchip64/linux-libc-dev-edge-rockchip64_25.11.0-trunk_arm64.deb
+Size: 1417936
+SHA256: 7531d41160b24812c4f378e1afb97852de9d65e2fd338468d13ab86b3d9938e1
+SHA1: fac7d07526d2827db0df7df730ff5fb7efe7402b
+MD5sum: 92ba946cd55a19eb37fd72ce3c4bf00e
+Description: Armbian Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system libraries.
+Multi-Arch: same
+Installed-Size: 6749
+Armbian-Original-Hash: 6.16.0-S038d-D0b5d-P5106-C01c2H3d80-HK01ba-Vc222-Bd200-R448a
+
+Package: linux-u-boot-lemonpi-edge
+Version: 25.11.0-trunk
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: armbian-u-boot
+Replaces: armbian-u-boot
+Conflicts: armbian-u-boot, u-boot-sunxi
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-edge/l/linux-u-boot-lemonpi-edge/linux-u-boot-lemonpi-edge_25.11.0-trunk_arm64.deb
+Size: 1176700
+SHA256: 303bd18a6fdd196b11e618ce31cd1a9b97cb3999f59a5458ab045e3f12b2cf7f
+SHA1: bde0373c7ec9e186e412fe17b153599297ca8f0b
+MD5sum: 76651f1c46e909d8eb8d1bf9b677d72b
+Description: Das U-Boot for lemonpi
+ version "2017.09" git revision "45aa10f3ced32f45bb336fb38925f14ac924c98e" patches hash "342de127e528957a" Extension hooks hash "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b" uboot functions hash "f9423d4d46d641db72d8fe0d40b68aae3c8c8f6e8e2b90cc95b731ccf0b955c5" variables hash "5f32176422cfacb4a7253fd4ca0150a45ee09772ed1ccc8c1b589066f45909aa" framework bash hash "b7035b95c8004ab0"
+Installed-Size: 18425
+Armbian-Original-Hash: 2017.09-S45aa-P342d-Hc48d-V5f32-Bb703-R448a
+
