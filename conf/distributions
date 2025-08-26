@@ -1,0 +1,40 @@
+Origin: Armbian
+Label: Armbian
+Codename: oracular
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor ufi001c-edge ufi001c-vendor
+Description: Custom APT repository for Armbian
+SignWith: F3C94127D8BD55D27C5DC304084094EBE1B608A2
+
+Origin: Armbian
+Label: Armbian
+Codename: plucky
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor ufi001c-edge ufi001c-vendor
+Description: Custom APT repository for Armbian
+SignWith: F3C94127D8BD55D27C5DC304084094EBE1B608A2
+
+Origin: Armbian
+Label: Armbian
+Codename: noble
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor ufi001c-edge ufi001c-vendor
+Description: Custom APT repository for Armbian
+SignWith: F3C94127D8BD55D27C5DC304084094EBE1B608A2
+
+Origin: Armbian
+Label: Armbian
+Codename: bookworm
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor ufi001c-edge ufi001c-vendor
+Description: Custom APT repository for Armbian
+SignWith: F3C94127D8BD55D27C5DC304084094EBE1B608A2
+
+Origin: Armbian
+Label: Armbian
+Codename: trixie
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor ufi001c-edge ufi001c-vendor
+Description: Custom APT repository for Armbian
+SignWith: F3C94127D8BD55D27C5DC304084094EBE1B608A2
+
