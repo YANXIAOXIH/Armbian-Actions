@@ -1,0 +1,117 @@
+Package: armbian-bsp-cli-ufi001c-edge
+Version: 25.11.0-trunk
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Recommends: bsdutils, parted, util-linux, toilet
+Priority: optional
+Section: kernel
+Filename: pool/ufi001c-edge/a/armbian-bsp-cli-ufi001c-edge/armbian-bsp-cli-ufi001c-edge_25.11.0-trunk_arm64.deb
+Size: 432688
+SHA256: 2f1134357747e7c2def8a78005ee0eabc93dea5efa3abbff43e778818a516430
+SHA1: 0c0f7ba2c09afd38a781dd58b5c83230e97a1b26
+MD5sum: 326f9569bb508d77cddc6c0a45d12adf
+Description: Armbian CLI BSP for board 'ufi001c' branch 'edge' 
+Installed-Size: 1409
+Armbian-Original-Hash: 1-PCc91e-Vdfb9-H2670-B1e5d-R756d
+Depends: bash, linux-base, u-boot-tools, initramfs-tools, lsb-release, fping, device-tree-compiler, base-files (>= 25.11.0-trunk)
+Replaces: zram-config, armbian-bsp-cli-ufi001c (<< 25.11.0-trunk)
+Breaks: armbian-bsp-cli-ufi001c (<< 25.11.0-trunk)
+Provides: armbian-bsp-cli
+
+Package: armbian-firmware
+Version: 25.11.0-trunk
+Architecture: all
+Maintainer: Armbian Linux <info@armbian.com>
+Conflicts: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Provides: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Priority: optional
+Section: kernel
+Filename: pool/ufi001c-edge/a/armbian-firmware/armbian-firmware_25.11.0-trunk_all.deb
+Size: 95947988
+SHA256: 2922e8da64bf0bf013441b59682fa7140b407bc458181ab284faf6e581e53419
+SHA1: a7193ff121e2297afc9d3b6c2880bbd85dc97cb9
+MD5sum: 649683d4fd2f96db95be020284b374e9
+Description: Armbian - Linux firmware
+Installed-Size: 300925
+Armbian-Original-Hash: 1-SA60db-B6c7f-R448a
+
+Package: linux-dtb-edge-qcom
+Version: 25.11.0-trunk
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-dtb, linux-dtb-armbian, armbian-edge
+Priority: optional
+Section: kernel
+Filename: pool/ufi001c-edge/l/linux-dtb-edge-qcom/linux-dtb-edge-qcom_25.11.0-trunk_arm64.deb
+Size: 791268
+SHA256: ecc49d754cb9b21ffc588b632abdeef392f78eddf43304238a28a321d6827370
+SHA1: 1fbcdc88e50b119729e0e6bc18ad912f4349600b
+MD5sum: 561155c832cd280f3fceba131da08d45
+Description: Armbian Linux edge DTBs in /boot/dtb-6.16.5-edge-qcom
+ This package contains device tree blobs from the Linux kernel, version 6.16.5-edge-qcom
+ version "6.16.5" git revision "4645fefac0b24d509b962c096b0327e87f34b1d2" codename "Baby Opossum Posse" drivers hash "0000000000000000" patches hash "6026498b43fc7ed5" .config hash "053b5ebac313eec2" .config hook hash "3d80c515b3e320ac" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "e02bef9a675844e3"
+Installed-Size: 22838
+Armbian-Original-Hash: 6.16.5-S4645-D0000-P6026-C053bH3d80-HK01ba-Vc222-Be02b-R448a
+
+Package: linux-headers-edge-qcom
+Version: 25.11.0-trunk
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-headers, linux-headers-armbian, armbian-edge
+Depends: make, gcc, libc6-dev, bison, flex, libssl-dev, libelf-dev
+Priority: optional
+Section: devel
+Filename: pool/ufi001c-edge/l/linux-headers-edge-qcom/linux-headers-edge-qcom_25.11.0-trunk_arm64.deb
+Size: 14898380
+SHA256: 3c0b172b2f3cee336c7aae437efd7765135845045317607d73cf11590ec389d5
+SHA1: 5303538f0be4d8209ecc23870fcff2924a9a6844
+MD5sum: 2b9dfb57d8ce1bd84d3e7e38a1dcfc08
+Description: Armbian Linux edge headers 6.16.5-edge-qcom
+ This package provides kernel header files for 6.16.5-edge-qcom
+ .
+ This is useful for DKMS and building of external modules.
+ version "6.16.5" git revision "4645fefac0b24d509b962c096b0327e87f34b1d2" codename "Baby Opossum Posse" drivers hash "0000000000000000" patches hash "6026498b43fc7ed5" .config hash "053b5ebac313eec2" .config hook hash "3d80c515b3e320ac" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "e02bef9a675844e3"
+Installed-Size: 80668
+Armbian-Original-Hash: 6.16.5-S4645-D0000-P6026-C053bH3d80-HK01ba-Vc222-Be02b-R448a
+
+Package: linux-image-edge-qcom
+Version: 25.11.0-trunk
+Source: linux-6.16.5
+Armbian-Kernel-Version: 6.16.5
+Armbian-Kernel-Version-Family: 6.16.5-edge-qcom
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-image, linux-image-armbian, armbian-edge, wireguard-modules
+Priority: optional
+Section: kernel
+Filename: pool/ufi001c-edge/l/linux-6.16.5/linux-image-edge-qcom_25.11.0-trunk_arm64.deb
+Size: 15269952
+SHA256: 4bde5164270c1a5b38584c131d470a0d68a557ebd395ee7edfa85e97533a9a04
+SHA1: ab839f9d719a6a07605ac86c8da1aaf00ea4f9bf
+MD5sum: fa8d1aa71464360556323189291227a3
+Description: Armbian Linux edge kernel image 6.16.5-edge-qcom
+ This package contains the Linux kernel, modules and corresponding other files.
+ version "6.16.5" git revision "4645fefac0b24d509b962c096b0327e87f34b1d2" codename "Baby Opossum Posse" drivers hash "0000000000000000" patches hash "6026498b43fc7ed5" .config hash "053b5ebac313eec2" .config hook hash "3d80c515b3e320ac" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "e02bef9a675844e3"
+Installed-Size: 84906
+Armbian-Original-Hash: 6.16.5-S4645-D0000-P6026-C053bH3d80-HK01ba-Vc222-Be02b-R448a
+
+Package: linux-libc-dev-edge-qcom
+Version: 25.11.0-trunk
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-libc-dev
+Conflicts: linux-libc-dev
+Architecture: arm64
+Priority: optional
+Section: devel
+Filename: pool/ufi001c-edge/l/linux-libc-dev-edge-qcom/linux-libc-dev-edge-qcom_25.11.0-trunk_arm64.deb
+Size: 1417664
+SHA256: 93ec25da7a2dd164139dc6a26e09d09e85bde6bd4f3a348af8c8287f9429daba
+SHA1: 42f9428c54809a47d0dc5889e31be51b7e9a46cb
+MD5sum: e67bb7badc562c0c4d63aeb4f62cd15b
+Description: Armbian Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system libraries.
+Multi-Arch: same
+Installed-Size: 6748
+Armbian-Original-Hash: 6.16.5-S4645-D0000-P6026-C053bH3d80-HK01ba-Vc222-Be02b-R448a
+
