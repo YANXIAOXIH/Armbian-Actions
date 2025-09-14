@@ -60,7 +60,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  RELEASE: "oracular plucky noble bookworm trixie"
+  RELEASE: "plucky noble bookworm trixie"
 
 jobs:
   # ====================================================================
@@ -355,13 +355,35 @@ jobs:
     name: "Publish GitHub Release"
     runs-on: ubuntu-latest
     needs: [Prepare_Build, Build_Image]
-    if: always() 
+    if: always() # Runs even if some builds fail, to release the successful ones
 
     steps:
-      - name: "Download All Artifacts"
+      - name: "Maximize Runner Free Space"
+        run: |
+          echo "Initial free space:"
+          sudo apt-get update
+          sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* openjdk* mysql* php* mongodb* dotnet* moby* snapd* android* || true
+          sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /usr/local/lib/android
+          echo "Free space after cleanup:"
+          df -h
+
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 
+          
+      - name: "Download small matrix-info artifacts"
         uses: actions/download-artifact@v4
         with:
-          path: artifacts/
+          name: matrix-info-* # Glob pattern to download only info files
+          path: artifacts/info
+          
+      - name: "Download kernel artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          name: kernel-debs-* # Glob pattern to download kernel debs
+          path: artifacts/kernels
 
       - name: "Rename Kernel DEBs for Release"
         shell: bash
@@ -369,23 +391,24 @@ jobs:
           # Simplify kernel .deb filenames for a cleaner release page.
           set -eo pipefail
           echo "--- Simplifying linux-*.deb filenames for release ---"
-          find artifacts/kernel-debs-*/ -type f -name 'linux-*.deb' | while read -r filepath; do
+          find artifacts/kernels/ -type f -name 'linux-*.deb' | while read -r filepath; do
             dir=$(dirname "$filepath"); old_name=$(basename "$filepath")
-            new_name=$(echo "$old_name" | sed -E 's/^(.*__[0-9.]+).*\.deb$/\1.deb/')
+            # This sed command might need adjustment based on your exact filename format
+            new_name=$(echo "$old_name" | sed -E 's/^(linux-(image|headers|dtb)-[^_]+_[^_]+).*/\1.deb/')
             if [[ "$old_name" != "$new_name" ]]; then mv -v "$filepath" "$dir/$new_name"; fi
           done
           echo "--- Final list of kernel packages after simplification ---"
-          ls -R artifacts/kernel-debs-*/
-          
+          ls -R artifacts/kernels/
+
       - name: "Generate Release Body"
         id: generate_body
         shell: bash
         run: |
-          # This clever logic finds all the unique boards and branches that were successfully built
-          BUILT_BOARDS=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f1 | sort -u | paste -sd ", " -)
-          BUILT_BRANCHES=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f2 | sort -u | paste -sd ", " -)
-          BUILT_RELEASES=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f3 | sort -u | paste -sd ", " -)
-          BUILT_DESKTOPS=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f4 | sort -u | paste -sd ", " -)
+          # The logic is the same, but the path is now artifacts/info/
+          BUILT_BOARDS=$(find artifacts/info/ -type f -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f1 | sort -u | paste -sd ", " -)
+          BUILT_BRANCHES=$(find artifacts/info/ -type f -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f2 | sort -u | paste -sd ", " -)
+          BUILT_RELEASES=$(find artifacts/info/ -type f -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f3 | sort -u | paste -sd ", " -)
+          BUILT_DESKTOPS=$(find artifacts/info/ -type f -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f4 | sort -u | paste -sd ", " -)
           echo "
             <p align='center'>
             <a href='https://www.armbian.com'>
@@ -411,17 +434,43 @@ jobs:
              
             </p>" > body.html
 
-      - name: "Publish to GitHub Release"
+      - name: "Create Release and Upload Kernel DEBs"
+        id: create_release
         uses: ncipollo/release-action@main
-        if: success()
         with:
           tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
-          artifacts: |
-            artifacts/armbian-image*/**/*
-            artifacts/kernel-debs-*/linux-*.deb
+          artifacts: "artifacts/kernels/**/*.deb" # Upload all renamed kernel debs
           allowUpdates: true
-          removeArtifacts: false
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
           bodyFile: "body.html"
+
+      - name: "Download and Upload Image Artifacts in a Loop"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
+        run: |
+          # Get a list of artifact IDs and names, but only for the image artifacts
+          gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" --jq '.artifacts[] | select(.name | startswith("armbian-image-")) | "\(.id) \(.name)"' | \
+          while read -r artifact_id artifact_name; do
+            echo "--- Processing image artifact: $artifact_name ---"
+            
+            # Create a clean temporary directory for each download
+            mkdir -p temp_image_dl
+            
+            echo "Downloading ${artifact_name} (ID: ${artifact_id})..."
+            gh api "repos/${{ github.repository }}/actions/artifacts/${artifact_id}/zip" > temp_image_dl/artifact.zip
+            
+            echo "Unzipping..."
+            unzip -o temp_image_dl/artifact.zip -d temp_image_dl/unpacked
+            
+            echo "Uploading files to release tag '${{ env.RELEASE_TAG }}'..."
+            # Using a glob to upload all contents from the unzipped folder
+            gh release upload "${{ env.RELEASE_TAG }}" temp_image_dl/unpacked/* --clobber
+
+            echo "Cleaning up local files for ${artifact_name}..."
+            rm -rf temp_image_dl
+            df -h
+            echo "----------------------------------------------------"
+          done
