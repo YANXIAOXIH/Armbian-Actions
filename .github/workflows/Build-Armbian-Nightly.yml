@@ -385,14 +385,14 @@ jobs:
         run: sleep 15s
         
       - name: "Download small matrix-info artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: matrix-info-*
           path: artifacts/info
           merge-multiple: true
           
       - name: "Download kernel artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: kernel-debs-*
           path: artifacts/kernels
