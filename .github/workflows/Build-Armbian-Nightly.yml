@@ -380,18 +380,23 @@ jobs:
           echo "--- Available Artifacts ---"
           gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" --jq '.artifacts[] | .name'
           echo "---------------------------"
-    
+          
+      - name: "Wait 15s for artifacts to become fully available"
+        run: sleep 15s
+        
       - name: "Download small matrix-info artifacts"
         uses: actions/download-artifact@v4
         with:
-          name: matrix*
+          pattern: matrix-info-*
           path: artifacts/info
+          merge-multiple: true
           
       - name: "Download kernel artifacts"
         uses: actions/download-artifact@v4
         with:
-          name: kernel*
+          pattern: kernel-debs-*
           path: artifacts/kernels
+          merge-multiple: true
 
       - name: "Rename Kernel DEBs for Release"
         shell: bash
