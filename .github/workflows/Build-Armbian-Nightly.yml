@@ -332,7 +332,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # A unique artifact name for each image, fully specified by the matrix.
-          name: armbian-image-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
+          name: Armbian-image-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
           path: build/output/images/*
           if-no-files-found: error
           
@@ -381,8 +381,8 @@ jobs:
           gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" --jq '.artifacts[] | .name'
           echo "---------------------------"
           
-      - name: "Wait 15s for artifacts to become fully available"
-        run: sleep 15s
+      - name: "Wait 120s for artifacts to become fully available"
+        run: sleep 120s
         
       - name: "Download small matrix-info artifacts"
         uses: actions/download-artifact@v5
@@ -404,24 +404,23 @@ jobs:
           # Simplify kernel .deb filenames for a cleaner release page.
           set -eo pipefail
           echo "--- Simplifying linux-*.deb filenames for release ---"
-          find artifacts/kernels/ -type f -name 'linux-*.deb' | while read -r filepath; do
+          find artifacts/kernels/kernel-debs-*/ -type f -name 'linux-*.deb' | while read -r filepath; do
             dir=$(dirname "$filepath"); old_name=$(basename "$filepath")
-            # This sed command might need adjustment based on your exact filename format
-            new_name=$(echo "$old_name" | sed -E 's/^(linux-(image|headers|dtb)-[^_]+_[^_]+).*/\1.deb/')
+            new_name=$(echo "$old_name" | sed -E 's/^(.*__[0-9.]+).*\.deb$/\1.deb/')
             if [[ "$old_name" != "$new_name" ]]; then mv -v "$filepath" "$dir/$new_name"; fi
           done
           echo "--- Final list of kernel packages after simplification ---"
-          ls -R artifacts/kernels/
-
+          ls -R artifacts/kernels/kernel-debs-*/
+          
       - name: "Generate Release Body"
         id: generate_body
         shell: bash
         run: |
           # The logic is the same, but the path is now artifacts/info/
-          BUILT_BOARDS=$(find artifacts/info/ -type f -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f1 | sort -u | paste -sd ", " -)
-          BUILT_BRANCHES=$(find artifacts/info/ -type f -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f2 | sort -u | paste -sd ", " -)
-          BUILT_RELEASES=$(find artifacts/info/ -type f -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f3 | sort -u | paste -sd ", " -)
-          BUILT_DESKTOPS=$(find artifacts/info/ -type f -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f4 | sort -u | paste -sd ", " -)
+          BUILT_BOARDS=$(find artifacts/info/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f1 | sort -u | paste -sd ", " -)
+          BUILT_BRANCHES=$(find artifacts/info/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f2 | sort -u | paste -sd ", " -)
+          BUILT_RELEASES=$(find artifacts/info/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f3 | sort -u | paste -sd ", " -)
+          BUILT_DESKTOPS=$(find artifacts/info/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f4 | sort -u | paste -sd ", " -)
           echo "
             <p align='center'>
             <a href='https://www.armbian.com'>
@@ -453,7 +452,7 @@ jobs:
         with:
           tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
-          artifacts: "artifacts/kernels/**/*.deb" # Upload all renamed kernel debs
+          artifacts: "artifacts/kernels/kernel-debs-*/linux-*.deb" # Upload all renamed kernel debs
           allowUpdates: true
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -465,7 +464,7 @@ jobs:
           RELEASE_TAG: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
         run: |
           # Get a list of artifact IDs and names, but only for the image artifacts
-          gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" --jq '.artifacts[] | select(.name | startswith("armbian-image-")) | "\(.id) \(.name)"' | \
+          gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" --jq '.artifacts[] | select(.name | startswith("Armbian-image-")) | "\(.id) \(.name)"' | \
           while read -r artifact_id artifact_name; do
             echo "--- Processing image artifact: $artifact_name ---"
             
