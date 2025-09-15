@@ -404,13 +404,14 @@ jobs:
           # Simplify kernel .deb filenames for a cleaner release page.
           set -eo pipefail
           echo "--- Simplifying linux-*.deb filenames for release ---"
-          find artifacts/kernels/kernel-debs-*/ -type f -name 'linux-*.deb' | while read -r filepath; do
+          find artifacts/kernels/ -type f -name 'linux-*.deb' | while read -r filepath; do
             dir=$(dirname "$filepath"); old_name=$(basename "$filepath")
-            new_name=$(echo "$old_name" | sed -E 's/^(.*__[0-9.]+).*\.deb$/\1.deb/')
+            # This sed command might need adjustment based on your exact filename format
+            new_name=$(echo "$old_name" | sed -E 's/^(linux-(image|headers|dtb)-[^_]+_[^_]+).*/\1.deb/')
             if [[ "$old_name" != "$new_name" ]]; then mv -v "$filepath" "$dir/$new_name"; fi
           done
           echo "--- Final list of kernel packages after simplification ---"
-          ls -R artifacts/kernels/kernel-debs-*/
+          ls -R artifacts/kernels/
           
       - name: "Generate Release Body"
         id: generate_body
@@ -452,7 +453,7 @@ jobs:
         with:
           tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
-          artifacts: "artifacts/kernels/kernel-debs-*/linux-*.deb" # Upload all renamed kernel debs
+          artifacts: "artifacts/kernels/**/linux-*.deb" # Upload all renamed kernel debs
           allowUpdates: true
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
