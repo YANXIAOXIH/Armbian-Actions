@@ -27,6 +27,7 @@ on:
         - mate
         - xfce
         - xmonad
+        - minimal_and_server
         default: 'server'
 
       ENABLE_EXTENSIONS:
@@ -83,7 +84,7 @@ jobs:
     name: "Prepare Build Parameters & Matrix"
     runs-on: ubuntu-latest
     outputs:
-      DESKTOP: ${{ github.event_name == 'schedule' && '["minimal", "server"]' || format('["{0}"]', inputs.DESKTOP) }}
+      DESKTOP: ${{ (github.event_name == 'schedule'|| inputs.DESKTOP == 'minimal_and_server') && '["minimal", "server"]' || format('["{0}"]', inputs.DESKTOP) }}
       DESKTOP_DISPLAY: ${{ github.event_name == 'schedule' && 'minimal, server' || inputs.DESKTOP }}
       ENABLE_EXTENSIONS: ${{ github.event_name == 'schedule' && ' ' || inputs.ENABLE_EXTENSIONS }}
       NIGHTLY: ${{ github.event_name == 'schedule' && 'no' || inputs.NIGHTLY }}
