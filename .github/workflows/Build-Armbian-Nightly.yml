@@ -427,14 +427,17 @@ jobs:
             <a href='https://www.armbian.com'><img alt='Armbian Linux rolling' src='https://img.shields.io/badge/dynamic/json?label=Armbian%20Linux%20edge&query=EDGE&color=34be5b&cacheSeconds=600&style=for-the-badge&url=https%3A%2F%2Fgithub.com%2Farmbian%2Fscripts%2Freleases%2Fdownload%2Fstatus%2Frunners_capacity.json'></a>
             </p>
             <br>
+            
             - **Board**: ${BUILT_BOARDS}
             - **Kernel**: ${BUILT_BRANCHES}
             - **Desktop**: ${BUILT_DESKTOPS} 
             - **Releases**: ${BUILT_RELEASES}
             - **Build Type**: ${{ needs.Prepare_Build.outputs.NIGHTLY == 'yes' && 'Nightly' || 'Stable' }}
             - **Verification**: sha256sum and GPG signature
+            
             <br>
             Please note that Armbian Rolling Releases are not recommended for production environments, as these builds are not thoroughly tested. However, in most cases, they should work well. 
+            
             <br>
              
             </p>" > body.html
