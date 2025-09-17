@@ -1,4 +1,10 @@
+# Workflow Name
 name: "Armbian Build CI"
+
+# ====================================================================
+#  TRIGGERS
+#  Defines when this workflow will run.
+# ====================================================================
 on:
   schedule:
     - cron: '30 2 * * 2'
@@ -45,6 +51,9 @@ on:
         - btrfs
         default: 'ext4'
 
+# ====================================================================
+#  PERMISSIONS & CONCURRENCY
+# ====================================================================
 permissions:
   contents: write
   pages: write
@@ -55,7 +64,11 @@ concurrency:
 
 env:
   RELEASE: "plucky noble bookworm trixie"
+  BOARD: "lemonpi som3588-cat ufi001c uz801"
 
+# ====================================================================
+#  JOBS
+# ====================================================================
 jobs:
   # ====================================================================
   # JOB 0: Prepare Build Parameters and Matrix 
@@ -69,6 +82,7 @@ jobs:
       NIGHTLY: ${{ github.event_name == 'schedule' && 'no' || inputs.NIGHTLY }}
       DOCKER: ${{ github.event_name == 'schedule' && 'no' || inputs.DOCKER }}
       ROOTFS: ${{ github.event_name == 'schedule' && 'ext4' || inputs.ROOTFS }}
+      BOARD: ${{ steps.set_matrix.outputs.BOARD }}
       RELEASE: ${{ steps.set_matrix.outputs.RELEASE }}
       VERSION: ${{ steps.get_version.outputs.VERSION }}
 
@@ -82,7 +96,6 @@ jobs:
           echo "DOCKER: ${{ github.event_name == 'schedule' && 'no' || inputs.DOCKER }}"
           echo "ROOTFS: ${{ github.event_name == 'schedule' && 'ext4' || inputs.ROOTFS }}"
 
-      # <-- ADDED: Get version from the build repo once.
       - name: "Checkout Build System to get Version"
         uses: actions/checkout@v4
         with:
@@ -99,10 +112,14 @@ jobs:
       - name: "Set and Log Release Matrix"
         id: set_matrix
         run: |
+          # Convert space-separated strings from env into JSON arrays for matrix strategies.
           JSON_RELEASE=$(echo "${{ env.RELEASE }}" | jq -c -R 'split(" ") | map(select(. != ""))')
+          JSON_BOARD=$(echo "${{ env.BOARD }}" | jq -c -R 'split(" ") | map(select(. != ""))')
           echo "RELEASE=${JSON_RELEASE}" >> $GITHUB_OUTPUT
+          echo "BOARD=${JSON_BOARD}" >> $GITHUB_OUTPUT
           echo "--- Release Matrix Generated ---"
-          echo "Matrix: ${JSON_RELEASE}"
+          echo "Matrix_RELEASE: ${JSON_RELEASE}"
+          echo "Matrix_BOARD: ${JSON_BOARD}"
 
   # ====================================================================
   # JOB 1: Build Kernel Packages
@@ -111,12 +128,12 @@ jobs:
     needs: Prepare_Build
     name: "Build Kernel [${{ matrix.BOARD }} ${{ matrix.BRANCH }}]"
     runs-on: ubuntu-22.04
-    timeout-minutes: 200
+    timeout-minutes: 300
     strategy:
       fail-fast: false
       matrix:
-        BOARD: [lemonpi, som3588-cat, ufi001c]
         BRANCH: [edge, vendor]
+        BOARD: ${{ fromJson(needs.Prepare_Build.outputs.BOARD) }}
 
     steps:
       - name: "Checkout Board Source"
@@ -145,7 +162,7 @@ jobs:
       - name: "Setup Kernel Build Environment"
         shell: bash
         run: |
-          # Aggressively clean up the runner to free up disk space for the build.
+          # Clean up runner to free up disk space.
           sudo apt-get update
           sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* openjdk* mysql* php* mongodb* dotnet* moby* snapd* android* || true
           sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
@@ -172,7 +189,7 @@ jobs:
         shell: bash
         run: |
           cd ./build
-          # Invoke the Armbian compile script with parameters for a kernel-only build.
+          # Invoke the compile script for a kernel-only build.
           ./compile.sh \
             REVISION="${{ needs.Prepare_Build.outputs.VERSION }}" \
             BOARD="${{ matrix.BOARD }}" \
@@ -204,8 +221,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        BOARD: [lemonpi, som3588-cat, ufi001c]
         BRANCH: [ edge, vendor ]
+        BOARD: ${{ fromJson(needs.Prepare_Build.outputs.BOARD) }} 
         RELEASE: ${{ fromJson(needs.Prepare_Build.outputs.RELEASE) }}
         DESKTOP: ${{ fromJson(needs.Prepare_Build.outputs.DESKTOP) }}
         
@@ -248,7 +265,7 @@ jobs:
           sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
           sudo apt-get install -y mkbootimg android-sdk-libsparse-utils
           
-          # Set build flags as environment variables based on the DESKTOP type.
+          # Set build flags based on the desktop type for the compile script.
           if [[ "${{ matrix.DESKTOP }}" == "minimal" ]]; then
             echo "BUILD_DESKTOP="no"" >> $GITHUB_ENV
             echo "BUILD_MINIMAL="yes"" >> $GITHUB_ENV
@@ -291,6 +308,7 @@ jobs:
         shell: bash
         run: |
           cd ./build
+          # Invoke compile script to build the full OS image, using the pre-built kernel.
           ./compile.sh \
             REVISION="${{ needs.Prepare_Build.outputs.VERSION }}" \
             BOARD="${{ matrix.BOARD }}" \
@@ -312,22 +330,19 @@ jobs:
             VENDOR=Armbian \
             COMPRESS_OUTPUTIMAGE="sha,gpg,xz"
 
-      - name: "Package UFI001C Flasher"
-        if: matrix.BOARD == 'ufi001c'
+      - name: "Package Flasher for UFI/UZ Devices"
+        if: contains(fromJson('["ufi001c", "ufi003", "uz801"]'), matrix.BOARD)
         shell: bash
         run: |
           cd ./build
-          chmod +x ./extensions/package_ufi001c_flasher.sh
-          sudo ./extensions/package_ufi001c_flasher.sh
+          if [ -f "./extensions/package_ufi001c_flasher.sh" ]; then
+            chmod +x ./extensions/package_ufi001c_flasher.sh
+            sudo ./extensions/package_ufi001c_flasher.sh
+          else
+            echo "::error:: Flasher packaging script not found!"
+            exit 1
+          fi
 
-      - name: "Upload Image Artifact"
-        uses: actions/upload-artifact@v4
-        with:
-          # A unique artifact name for each image, fully specified by the matrix.
-          name: armbian-image-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
-          path: build/output/images/*
-          if-no-files-found: error
-          
       - name: "Record Successful Image Build Info"
         shell: bash
         run: |
@@ -339,6 +354,41 @@ jobs:
         with:
           name: matrix-info-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
           path: matrix-info.txt
+
+      - name: "Delete Conflicting Image Assets from Release"
+
+        continue-on-error: true
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
+        run: |
+          mapfile -t local_files < <(find build/output/images -type f -printf "%f\n")
+          if [ ${#local_files[@]} -eq 0 ]; then echo "Warning: No local image files found."; exit 0; fi
+          mapfile -t remote_assets < <(gh release view "${RELEASE_TAG}" --json assets --jq '.assets[].name' || echo "")
+          if [ $? -ne 0 ] || [ ${#remote_assets[@]} -eq 0 ]; then echo "No existing release or assets found."; exit 0; fi
+          for file in "${local_files[@]}"; do
+            for asset in "${remote_assets[@]}"; do
+              if [[ "$file" == "$asset" ]]; then
+                echo "Conflict found. Deleting existing asset: ${asset}..."
+                gh release delete-asset "${RELEASE_TAG}" "${asset}" --yes
+                break
+              fi
+            done
+          done
+
+      - name: "Upload Image to GitHub Release"
+        uses: ncipollo/release-action@v1
+        if: success()
+        with:
+          tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
+          name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
+          artifacts: |
+            build/output/images/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: false 
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   # ====================================================================
   # JOB 3: Publish GitHub Release
@@ -389,13 +439,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
         run: |
-          # 1. Gather info from this run's successful builds.
+          # Step 1: Gather info from all successful builds from their matrix-info artifacts.
           NEW_BOARDS=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f1 | sort -u)
           NEW_BRANCHES=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f2 | sort -u)
           NEW_RELEASES=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f3 | sort -u)
           NEW_DESKTOPS=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f4 | sort -u)
 
-          # 2. Try to fetch the old release body.
+          # Step 2: Fetch the existing release body to merge with, if it exists.
           OLD_BODY=""
           if gh release view "${VERSION}" --json body --jq '.body' > old_body.md; then
             echo "--- Found existing release, fetching old body ---"
@@ -404,8 +454,7 @@ jobs:
             echo "--- No existing release found, creating new one ---"
           fi
 
-          # 3. Parse the OLD body using reliable HTML comment markers.
-          #    This regex now correctly captures everything between the marker and the closing '-->'.
+          # Step 3: Parse the old body to extract previously built items.
           OLD_BOARDS=$(echo "$OLD_BODY" | grep -oP '<!-- BOARDS_LIST: \K.*?(?= -->)' | tr ',' '\n' || echo "")
           OLD_BRANCHES=$(echo "$OLD_BODY" | grep -oP '<!-- KERNELS_LIST: \K.*?(?= -->)' | tr ',' '\n' || echo "")
           OLD_RELEASES=$(echo "$OLD_BODY" | grep -oP '<!-- RELEASES_LIST: \K.*?(?= -->)' | tr ',' '\n' || echo "")
@@ -419,8 +468,7 @@ jobs:
             ) | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep . | sort -u
           }
 
-          # 5. Merge old and new info, then format for display at the end
-          # The result of merge_and_sort is a multi-line string
+          # Step 5: Merge and format the final display lists.
           MERGED_BOARDS_LIST=$(merge_and_sort "${NEW_BOARDS}" "${OLD_BOARDS}")
           MERGED_BRANCHES_LIST=$(merge_and_sort "${NEW_BRANCHES}" "${OLD_BRANCHES}")
           MERGED_RELEASES_LIST=$(merge_and_sort "${NEW_RELEASES}" "${OLD_RELEASES}")
@@ -439,7 +487,7 @@ jobs:
           echo "Desktop: ${BUILT_DESKTOPS}"
           echo "-------------------------"
 
-          # 6. Generate the final HTML body using a Heredoc to define the template variable.
+          # Step 6: Define the HTML body template.
           BODY_TEMPLATE=$(cat <<'EOM')
             <p align='center'>
             <a href='https://www.armbian.com'>
@@ -480,10 +528,10 @@ jobs:
 
           echo "${BODY_CONTENT}" > body.html
 
-          echo "--- Generated body.html ---"
+          echo "--- Final Release Body Generated ---"
           cat body.html
 
-      - name: "Delete conflicting assets from existing release"
+      - name: "Delete Conflicting Kernel Assets from Release"
         continue-on-error: true
         shell: bash
         env:
@@ -517,14 +565,13 @@ jobs:
           done
           echo "Finished deleting conflicting assets."
 
-      - name: "Publish to GitHub Release"
+      - name: "Publish Final Release and Kernel Packages"
         uses: ncipollo/release-action@v1
         if: success()
         with:
           tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           artifacts: |
-            artifacts/armbian-image*/**/*
             artifacts/kernel-debs-*/linux-*.deb
           allowUpdates: true
           removeArtifacts: false
@@ -596,10 +643,10 @@ jobs:
 
           EOF
           done
-          echo "--- Final distributions config ---"
+          echo "--- APT distributions config ---"
           cat repo/conf/distributions
 
-      - name: "Add all DEB packages to each distribution"
+      - name: "Add all DEB packages to repository"
         shell: bash
         run: |
           # Use reprepro to add all built .deb packages to the repository.

@@ -19,15 +19,16 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # --- 脚本开始 ---
-echo "🚀 开始执行UFI001C Flasher打包脚本..."
+echo "🚀 开始执行 Flasher 打包脚本..."
 
 # 1. 查找源镜像文件
-echo "--> 1. 正在搜索 UFI001C 镜像文件..."
-SOURCE_IMAGE_XZ=$(find "${BUILD_OUTPUT_DIR}" -name "*Ufi00*.img.xz" -type f)
+echo "--> 1. 正在搜索 Armbian 镜像文件..."
+SOURCE_IMAGE_XZ=$(find "${BUILD_OUTPUT_DIR}" \( -name "*Ufi00*.img.xz" -o -name "*Uz801*.img.xz" \) -type f)
 if [ -z "${SOURCE_IMAGE_XZ}" ]; then
-  echo "❌ 错误：在目录 ${BUILD_OUTPUT_DIR} 中未找到包含 'UFI001C' 的 .img.xz 文件。"
+  echo "❌ 错误：在目录 ${BUILD_OUTPUT_DIR} 中未找到匹配 'Ufi00*' 或 'Uz801*' 的 .img.xz 文件。"
   exit 1
 fi
+
 if [ $(echo "${SOURCE_IMAGE_XZ}" | wc -l) -gt 1 ]; then
   echo "⚠️ 警告：找到多个匹配的镜像文件，将使用第一个："
   echo "${SOURCE_IMAGE_XZ}"

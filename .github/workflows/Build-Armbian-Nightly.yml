@@ -1,4 +1,10 @@
+# Workflow Name
 name: "Armbian Build Nightly"
+
+# ====================================================================
+#  TRIGGERS
+#  Defines when this workflow will run.
+# ====================================================================
 on:
   schedule:
     - cron: '30 2 * * 5'
@@ -51,6 +57,9 @@ on:
         - btrfs
         default: 'ext4'
 
+# ====================================================================
+#  PERMISSIONS & CONCURRENCY
+# ====================================================================
 permissions:
   contents: write
   pages: write
@@ -61,7 +70,11 @@ concurrency:
 
 env:
   RELEASE: "plucky noble bookworm trixie"
+  BOARD: "lemonpi som3588-cat ufi001c uz801"
 
+# ====================================================================
+#  JOBS
+# ====================================================================
 jobs:
   # ====================================================================
   # JOB 0: Prepare Build Parameters and Matrix 
@@ -76,8 +89,10 @@ jobs:
       NIGHTLY: ${{ github.event_name == 'schedule' && 'no' || inputs.NIGHTLY }}
       DOCKER: ${{ github.event_name == 'schedule' && 'no' || inputs.DOCKER }}
       ROOTFS: ${{ github.event_name == 'schedule' && 'ext4' || inputs.ROOTFS }}
+      BOARD: ${{ steps.set_matrix.outputs.BOARD }}
       RELEASE: ${{ steps.set_matrix.outputs.RELEASE }}
       VERSION: ${{ steps.get_version.outputs.VERSION }}
+
     steps:
       - name: "Log effective parameters"
         run: |
@@ -106,10 +121,14 @@ jobs:
       - name: "Set and Log Release Matrix"
         id: set_matrix
         run: |
+          # Convert space-separated strings from env into JSON arrays for matrix strategies.
           JSON_RELEASE=$(echo "${{ env.RELEASE }}" | jq -c -R 'split(" ") | map(select(. != ""))')
+          JSON_BOARD=$(echo "${{ env.BOARD }}" | jq -c -R 'split(" ") | map(select(. != ""))')
           echo "RELEASE=${JSON_RELEASE}" >> $GITHUB_OUTPUT
+          echo "BOARD=${JSON_BOARD}" >> $GITHUB_OUTPUT
           echo "--- Release Matrix Generated ---"
-          echo "Matrix: ${JSON_RELEASE}"
+          echo "Matrix_RELEASE: ${JSON_RELEASE}"
+          echo "Matrix_BOARD: ${JSON_BOARD}"
 
   # ====================================================================
   # JOB 1: Build Kernel Packages
@@ -118,12 +137,12 @@ jobs:
     needs: Prepare_Build
     name: "Build Kernel [${{ matrix.BOARD }} ${{ matrix.BRANCH }}]"
     runs-on: ubuntu-22.04
-    timeout-minutes: 200
+    timeout-minutes: 300
     strategy:
       fail-fast: false
       matrix:
-        BOARD: [lemonpi, som3588-cat, ufi001c]
         BRANCH: [edge, vendor]
+        BOARD: ${{ fromJson(needs.Prepare_Build.outputs.BOARD) }}
 
     steps:
       - name: "Checkout Board Source"
@@ -152,7 +171,7 @@ jobs:
       - name: "Setup Kernel Build Environment"
         shell: bash
         run: |
-          # Aggressively clean up the runner to free up disk space for the build.
+          # Clean up runner to free up disk space.
           sudo apt-get update
           sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* openjdk* mysql* php* mongodb* dotnet* moby* snapd* android* || true
           sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
@@ -179,7 +198,7 @@ jobs:
         shell: bash
         run: |
           cd ./build
-          # Invoke the Armbian compile script with parameters for a kernel-only build.
+          # Invoke the compile script for a kernel-only build.
           ./compile.sh \
             REVISION="${{ needs.Prepare_Build.outputs.VERSION }}" \
             BOARD="${{ matrix.BOARD }}" \
@@ -211,8 +230,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        BOARD: [lemonpi, som3588-cat, ufi001c]
         BRANCH: [ edge, vendor ]
+        BOARD: ${{ fromJson(needs.Prepare_Build.outputs.BOARD) }} 
         RELEASE: ${{ fromJson(needs.Prepare_Build.outputs.RELEASE) }}
         DESKTOP: ${{ fromJson(needs.Prepare_Build.outputs.DESKTOP) }}
         
@@ -255,7 +274,7 @@ jobs:
           sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
           sudo apt-get install -y mkbootimg android-sdk-libsparse-utils
           
-          # Set build flags as environment variables based on the DESKTOP type.
+          # Set build flags based on the desktop type for the compile script.
           if [[ "${{ matrix.DESKTOP }}" == "minimal" ]]; then
             echo "BUILD_DESKTOP="no"" >> $GITHUB_ENV
             echo "BUILD_MINIMAL="yes"" >> $GITHUB_ENV
@@ -298,6 +317,7 @@ jobs:
         shell: bash
         run: |
           cd ./build
+          # Invoke compile script to build the full OS image, using the pre-built kernel.
           ./compile.sh \
             REVISION="${{ needs.Prepare_Build.outputs.VERSION }}" \
             BOARD="${{ matrix.BOARD }}" \
@@ -320,22 +340,19 @@ jobs:
             VENDOR=Armbian \
             COMPRESS_OUTPUTIMAGE="sha,gpg,xz"
 
-      - name: "Package UFI001C Flasher"
-        if: matrix.BOARD == 'ufi001c'
+      - name: "Package Flasher for UFI/UZ Devices"
+        if: contains(fromJson('["ufi001c", "ufi003", "uz801"]'), matrix.BOARD)
         shell: bash
         run: |
           cd ./build
-          chmod +x ./extensions/package_ufi001c_flasher.sh
-          sudo ./extensions/package_ufi001c_flasher.sh
+          if [ -f "./extensions/package_ufi001c_flasher.sh" ]; then
+            chmod +x ./extensions/package_ufi001c_flasher.sh
+            sudo ./extensions/package_ufi001c_flasher.sh
+          else
+            echo "::error:: Flasher packaging script not found!"
+            exit 1
+          fi
 
-      - name: "Upload Image Artifact"
-        uses: actions/upload-artifact@v4
-        with:
-          # A unique artifact name for each image, fully specified by the matrix.
-          name: Armbian-image-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
-          path: build/output/images/*
-          if-no-files-found: error
-          
       - name: "Record Successful Image Build Info"
         shell: bash
         run: |
@@ -348,6 +365,19 @@ jobs:
           name: matrix-info-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
           path: matrix-info.txt
 
+      - name: "Upload Image to GitHub Release"
+        uses: ncipollo/release-action@v1
+        if: success()
+        with:
+          tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
+          name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
+          artifacts: |
+            build/output/images/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: false 
+          token: ${{ secrets.GITHUB_TOKEN }}
+
   # ====================================================================
   # JOB 3: Publish GitHub Release
   # ====================================================================
@@ -355,48 +385,13 @@ jobs:
     name: "Publish GitHub Release"
     runs-on: ubuntu-latest
     needs: [Prepare_Build, Build_Image]
-    if: always() # Runs even if some builds fail, to release the successful ones
+    if: always() 
 
     steps:
-      - name: "Maximize Runner Free Space"
-        run: |
-          echo "Initial free space:"
-          sudo apt-get update
-          sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* openjdk* mysql* php* mongodb* dotnet* moby* snapd* android* || true
-          sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /usr/local/lib/android
-          echo "Free space after cleanup:"
-          df -h
-
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
+      - name: "Download All Artifacts"
+        uses: actions/download-artifact@v4
         with:
-          fetch-depth: 1 
-          
-      - name: "DEBUG - List all available artifacts for this run"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "--- Available Artifacts ---"
-          gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" --jq '.artifacts[] | .name'
-          echo "---------------------------"
-          
-      - name: "Wait 120s for artifacts to become fully available"
-        run: sleep 120s
-        
-      - name: "Download small matrix-info artifacts"
-        uses: actions/download-artifact@v5
-        with:
-          pattern: matrix-info-*
-          path: artifacts/info
-          merge-multiple: true
-          
-      - name: "Download kernel artifacts"
-        uses: actions/download-artifact@v5
-        with:
-          pattern: kernel-debs-*
-          path: artifacts/kernels
-          merge-multiple: true
+          path: artifacts/
 
       - name: "Rename Kernel DEBs for Release"
         shell: bash
@@ -404,24 +399,23 @@ jobs:
           # Simplify kernel .deb filenames for a cleaner release page.
           set -eo pipefail
           echo "--- Simplifying linux-*.deb filenames for release ---"
-          find artifacts/kernels/ -type f -name 'linux-*.deb' | while read -r filepath; do
+          find artifacts/kernel-debs-*/ -type f -name 'linux-*.deb' | while read -r filepath; do
             dir=$(dirname "$filepath"); old_name=$(basename "$filepath")
-            # This sed command might need adjustment based on your exact filename format
-            new_name=$(echo "$old_name" | sed -E 's/^(linux-(image|headers|dtb)-[^_]+_[^_]+).*/\1.deb/')
+            new_name=$(echo "$old_name" | sed -E 's/^(.*__[0-9.]+).*\.deb$/\1.deb/')
             if [[ "$old_name" != "$new_name" ]]; then mv -v "$filepath" "$dir/$new_name"; fi
           done
           echo "--- Final list of kernel packages after simplification ---"
-          ls -R artifacts/kernels/
+          ls -R artifacts/kernel-debs-*/
           
       - name: "Generate Release Body"
         id: generate_body
         shell: bash
         run: |
-          # The logic is the same, but the path is now artifacts/info/
-          BUILT_BOARDS=$(find artifacts/info/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f1 | sort -u | paste -sd ", " -)
-          BUILT_BRANCHES=$(find artifacts/info/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f2 | sort -u | paste -sd ", " -)
-          BUILT_RELEASES=$(find artifacts/info/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f3 | sort -u | paste -sd ", " -)
-          BUILT_DESKTOPS=$(find artifacts/info/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f4 | sort -u | paste -sd ", " -)
+          # This clever logic finds all the unique boards and branches that were successfully built
+          BUILT_BOARDS=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f1 | sort -u | paste -sd ", " -)
+          BUILT_BRANCHES=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f2 | sort -u | paste -sd ", " -)
+          BUILT_RELEASES=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f3 | sort -u | paste -sd ", " -)
+          BUILT_DESKTOPS=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f4 | sort -u | paste -sd ", " -)
           echo "
             <p align='center'>
             <a href='https://www.armbian.com'>
@@ -432,58 +426,27 @@ jobs:
             <a href='https://www.armbian.com'><img alt='Armbian Linux rolling' src='https://img.shields.io/badge/dynamic/json?label=Armbian%20Linux%20edge&query=EDGE&color=34be5b&cacheSeconds=600&style=for-the-badge&url=https%3A%2F%2Fgithub.com%2Farmbian%2Fscripts%2Freleases%2Fdownload%2Fstatus%2Frunners_capacity.json'></a>
             </p>
             <br>
-
             - **Board**: ${BUILT_BOARDS}
             - **Kernel**: ${BUILT_BRANCHES}
             - **Desktop**: ${BUILT_DESKTOPS} 
             - **Releases**: ${BUILT_RELEASES}
             - **Build Type**: ${{ needs.Prepare_Build.outputs.NIGHTLY == 'yes' && 'Nightly' || 'Stable' }}
             - **Verification**: sha256sum and GPG signature
-
             <br>
             Please note that Armbian Rolling Releases are not recommended for production environments, as these builds are not thoroughly tested. However, in most cases, they should work well. 
-
             <br>
-             
+             
             </p>" > body.html
-
-      - name: "Create Release and Upload Kernel DEBs"
-        id: create_release
-        uses: ncipollo/release-action@main
+      - name: "Publish Final Release and Kernel Packages"
+        uses: ncipollo/release-action@v1
+        if: success()
         with:
           tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
-          artifacts: "artifacts/kernels/**/linux-*.deb" # Upload all renamed kernel debs
+          artifacts: |
+            artifacts/kernel-debs-*/linux-*.deb
           allowUpdates: true
-          replacesArtifacts: true
+          removeArtifacts: false
+          replacesArtifacts: false 
           token: ${{ secrets.GITHUB_TOKEN }}
           bodyFile: "body.html"
-
-      - name: "Download and Upload Image Artifacts in a Loop"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_TAG: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
-        run: |
-          # Get a list of artifact IDs and names, but only for the image artifacts
-          gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" --jq '.artifacts[] | select(.name | startswith("Armbian-image-")) | "\(.id) \(.name)"' | \
-          while read -r artifact_id artifact_name; do
-            echo "--- Processing image artifact: $artifact_name ---"
-            
-            # Create a clean temporary directory for each download
-            mkdir -p temp_image_dl
-            
-            echo "Downloading ${artifact_name} (ID: ${artifact_id})..."
-            gh api "repos/${{ github.repository }}/actions/artifacts/${artifact_id}/zip" > temp_image_dl/artifact.zip
-            
-            echo "Unzipping..."
-            unzip -o temp_image_dl/artifact.zip -d temp_image_dl/unpacked
-            
-            echo "Uploading files to release tag '${{ env.RELEASE_TAG }}'..."
-            # Using a glob to upload all contents from the unzipped folder
-            gh release upload "${{ env.RELEASE_TAG }}" temp_image_dl/unpacked/* --clobber
-
-            echo "Cleaning up local files for ${artifact_name}..."
-            rm -rf temp_image_dl
-            df -h
-            echo "----------------------------------------------------"
-          done

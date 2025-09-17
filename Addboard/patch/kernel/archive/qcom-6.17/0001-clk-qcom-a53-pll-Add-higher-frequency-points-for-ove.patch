@@ -1,0 +1,28 @@
+From 121c49fcb7ce630cdb00229a230ecd12e37504f9 Mon Sep 17 00:00:00 2001
+From: YANXIAOXIH <yanxiaoxi@live.com>
+Date: Tue, 16 Sep 2025 23:19:14 +0800
+Subject: [PATCH] clk: qcom: a53-pll: Add higher frequency points for
+ overclocking
+
+Signed-off-by: YANXIAOXIH <yanxiaoxi@live.com>
+---
+ drivers/clk/qcom/a53-pll.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/clk/qcom/a53-pll.c b/drivers/clk/qcom/a53-pll.c
+index f43d455ab..9a3ccc58b 100644
+--- a/drivers/clk/qcom/a53-pll.c
++++ b/drivers/clk/qcom/a53-pll.c
+@@ -25,6 +25,9 @@ static const struct pll_freq_tbl a53pll_freq[] = {
+ 	{ 1248000000, 65, 0x0, 0x1, 0 },
+ 	{ 1363200000, 71, 0x0, 0x1, 0 },
+ 	{ 1401600000, 73, 0x0, 0x1, 0 },
++	{ 1621600000, 84, 0x0, 0x1, 0 },
++	{ 1841600000, 96, 0x0, 0x1, 0 },
++	{ 1951600000, 103, 0x0, 0x1, 0 },
+ 	{ }
+ };
+ 
+-- 
+2.39.5
+

@@ -5,72 +5,8 @@
 #include "msm8916-ufi.dtsi"
 
 / {
-	model = "UFI001C 4G Modem Stick";
-	compatible = "thwc,ufi001c", "qcom,msm8916";
-
-	fan0: fan0 {
-        compatible = "gpio-fan";
-        gpios = <&tlmm 21 GPIO_ACTIVE_LOW>;
-        #cooling-cells = <2>;
-		gpio-fan,speed-map = <0 0>,
-		                     <1 200>,
-		                     <2 255>; 
-    };
-
-	thermal-zones {
-		cpu0-1-thermal {
-			trips {
-				trip_medium_speed_01: trip-point-medium-01 {
-					temperature = <60000>;
-					hysteresis = <2000>;
-					type = "active";
-				};
-
-				trip_full_speed_01: trip-point-full-01 {
-					temperature = <65000>;
-					hysteresis = <2000>;
-					type = "active";
-				};
-			};
-
-			cooling-maps {
-				map_medium_speed_01 {
-					trip = <&trip_medium_speed_01>;
-					cooling-device = <&fan0 1 1>;
-				};
-				map_full_speed_01 {
-					trip = <&trip_full_speed_01>;
-					cooling-device = <&fan0 2 2>;
-				};
-			};
-		};
-
-		cpu2-3-thermal {
-			trips {
-				trip_medium_speed_23: trip-point-medium-23 {
-					temperature = <60000>;
-					hysteresis = <2000>;
-					type = "active";
-				};
-				trip_full_speed_23: trip-point-full-23 {
-					temperature = <65000>;
-					hysteresis = <2000>;
-					type = "active";
-				};
-			};
-
-			cooling-maps {
-				map_medium_speed_23 {
-					trip = <&trip_medium_speed_23>;
-					cooling-device = <&fan0 1 1>;
-				};
-				map_full_speed_23 {
-					trip = <&trip_full_speed_23>;
-					cooling-device = <&fan0 2 2>;
-				};
-			};
-		};
-	};
+	model = "UFI003 4G Modem Stick";
+	compatible = "thwc,ufi003", "qcom,msm8916";
 
 	leds {
 		compatible = "gpio-leds";
@@ -86,19 +22,19 @@
 		led_r: led-r {
 			color = <LED_COLOR_ID_RED>;
 			default-state = "off";
-			function = LED_FUNCTION_POWER;
+			function = LED_FUNCTION_PANIC;
 		};
 
 		led_g: led-g {
 			color = <LED_COLOR_ID_GREEN>;
 			default-state = "off";
-			function = LED_FUNCTION_WAN;
+			function = LED_FUNCTION_WLAN;
 		};
 
 		led_b: led-b {
 			color = <LED_COLOR_ID_BLUE>;
 			default-state = "off";
-			function = LED_FUNCTION_WLAN;
+			function = LED_FUNCTION_CPU;
 		};
 	};
 
@@ -136,6 +72,10 @@
 	};
 };
 
+&gpu {
+	status = "okay";
+};
+
 &button_restart {
 	gpios = <&tlmm 37 GPIO_ACTIVE_HIGH>;
 };
@@ -145,7 +85,7 @@
 };
 
 &led_g {
-	gpios = <&tlmm 21 GPIO_ACTIVE_LOW>;
+	gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
 };
 
 &led_r {

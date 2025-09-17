@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * Copyright (c) 2024 Rockchip Electronics Co., Ltd.
+ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
  * Device Tree Source for LemonPi board on Rockchip RK3588 SoC.
+ * Kernel Version Target: 6.1
  *
  */
 
@@ -1569,12 +1570,12 @@
 
 /* Display subsystem */
 &display_subsystem {
-	clocks = <&hdptxphy_hdmi1>;
+	clocks = <&hdptxphy_hdmi_clk1>;
 	clock-names = "hdmi1_phy_pll";
 };
 
 /* HDMI1 TX PHY */
-&hdptxphy_hdmi1 {
+&hdptxphy_hdmi_clk1 {
 	status = "okay";
 };
 

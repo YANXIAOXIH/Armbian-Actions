@@ -1,11 +1,11 @@
 config: # This is file 'patch/kernel/archive/sm8250-6.7/0000.patching_config.yaml'
 
   # Just some info stuff; not used by the patching scripts
-  name: qcom-6.16
+  name: qcom-6.17
   kind: kernel
   type: mainline # or: vendor
-  branch: linux-6.16.y
-  last-known-good-tag: v6.16.0
+  branch: linux-6.17.y
+  last-known-good-tag: v6.17.0
   maintainers:
     - { github: rpardini, name: Ricardo Pardini, email: ricardo@pardini.net, armbian-forum: rpardini }
 

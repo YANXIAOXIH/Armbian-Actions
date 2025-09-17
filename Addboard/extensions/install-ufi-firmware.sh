@@ -17,7 +17,7 @@ function post_install_kernel_debs__install_ufi_firmware_debs() {
 
     # Check if the current build is for a supported UFI board.
     case "$BOARD" in
-        "ufi001c"|"ufi003")
+        "ufi001c"|"ufi003"|"uz801")
             # This is a target board, proceed.
             ;;
         *)
@@ -34,10 +34,10 @@ function post_install_kernel_debs__install_ufi_firmware_debs() {
     local FIRMWARE_DEB_PATH=""
 
     # Select the correct firmware package based on the board model.
-    if [ "$BOARD" == "ufi001c" ]; then
-        FIRMWARE_DEB_PATH="modem/firmware-ufi001c.deb"
-    else
+    if [ "$BOARD" == "ufi003" ]; then
         FIRMWARE_DEB_PATH="modem/firmware-ufi003.deb"
+    else
+        FIRMWARE_DEB_PATH="modem/firmware-ufi001c.deb"
     fi
     
     # Construct the full download URLs for the packages.

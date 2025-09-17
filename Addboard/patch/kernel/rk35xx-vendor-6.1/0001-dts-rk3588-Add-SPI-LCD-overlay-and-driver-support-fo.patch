@@ -1,7 +1,37 @@
-diff -Nur a/arch/arm64/boot/dts/rockchip/overlay/Makefile b/arch/arm64/boot/dts/rockchip/overlay/Makefile
---- a/arch/arm64/boot/dts/rockchip/overlay/Makefile	2025-08-10 17:42:38.397459592 +0800
-+++ b/arch/arm64/boot/dts/rockchip/overlay/Makefile	2025-08-10 17:50:02.905454580 +0800
-@@ -184,6 +184,7 @@
+From ffb473c5361df05d9d93fa519d8ecb3b079b20b5 Mon Sep 17 00:00:00 2001
+From: YANXIAOXIH <yanxiaoxi@live.com>
+Date: Wed, 17 Sep 2025 16:13:06 +0800
+Subject: [PATCH] dts: rk3588: Add SPI LCD overlay and driver support for
+ LemonPi
+
+This patch introduces support for a common SPI-based LCD module (using the ST7789V controller) on the rk3588-lemonpi board via a device tree overlay.
+
+The new  overlay accomplishes the following:
+- Enables the SPI0 bus (spi0m1).
+- Defines a node for a 172x320 ST7789V LCD panel, configuring its reset and D/C GPIOs.
+- Configures PWM13 to provide backlight control for the display.
+- Sets up the necessary pinmuxing for all related SPI, GPIO, and PWM pins.
+- Additionally includes a PWM-based fan control node for thermal management.
+
+To ensure correct image positioning on displays where the controller's resolution differs from the panel's (e.g., a 240x320 controller on a 172x320 panel), the  driver has been enhanced:
+- It now parses  and  properties from the device tree.
+- A new  function applies these offsets when setting the display window, allowing for precise image alignment.
+
+Finally, the new overlay is added to the overlay Makefile to ensure it is built as part of the kernel image.
+
+Signed-off-by: YANXIAOXIH <yanxiaoxi@live.com>
+---
+ arch/arm64/boot/dts/rockchip/overlay/Makefile |   1 +
+ .../rockchip/overlay/rk3588-lemonpi-spi.dts   | 113 ++++++++++++++++++
+ drivers/staging/fbtft/fb_st7789v.c            |  43 +++++++
+ 3 files changed, 157 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/rk3588-lemonpi-spi.dts
+
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/Makefile b/arch/arm64/boot/dts/rockchip/overlay/Makefile
+index 644050ebb..cfa3976c2 100644
+--- a/arch/arm64/boot/dts/rockchip/overlay/Makefile
++++ b/arch/arm64/boot/dts/rockchip/overlay/Makefile
+@@ -184,6 +184,7 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
  	rk3588-spi4-m1-cs0-spidev.dtbo \
  	rk3588-spi4-m1-cs1-spidev.dtbo \
  	rk3588-spi4-m2-cs0-spidev.dtbo \
@@ -9,10 +39,12 @@ diff -Nur a/arch/arm64/boot/dts/rockchip/overlay/Makefile b/arch/arm64/boot/dts/
  	rk3588-uart0-m2.dtbo \
  	rk3588-uart1-m1.dtbo \
  	rk3588-uart2-m0.dtbo \
-diff -Nur a/arch/arm64/boot/dts/rockchip/overlay/rk3588-lemonpi-spi.dts b/arch/arm64/boot/dts/rockchip/overlay/rk3588-lemonpi-spi.dts
---- a/arch/arm64/boot/dts/rockchip/overlay/rk3588-lemonpi-spi.dts	1970-01-01 08:00:00.000000000 +0800
-+++ b/arch/arm64/boot/dts/rockchip/overlay/rk3588-lemonpi-spi.dts	2025-08-10 17:50:23.837449866 +0800
-@@ -0,0 +1,94 @@
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/rk3588-lemonpi-spi.dts b/arch/arm64/boot/dts/rockchip/overlay/rk3588-lemonpi-spi.dts
+new file mode 100644
+index 000000000..c82031e2b
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/rk3588-lemonpi-spi.dts
+@@ -0,0 +1,113 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/dts-v1/;
 +/plugin/;
@@ -106,11 +138,31 @@ diff -Nur a/arch/arm64/boot/dts/rockchip/overlay/rk3588-lemonpi-spi.dts b/arch/a
 +            };
 +        };
 +    };
++
++	/* PWM cooling fan */
++    fragment@4 {
++        target-path = "/";
++        __overlay__ {
++            fan: pwm-fan {
++                compatible = "pwm-fan";
++                #cooling-cells = <2>;
++                pwms = <&pwm4 0 5000 0>;
++                cooling-levels = <0 100 150 200 255>;
++                rockchip,temp-trips = <
++                    45000	1
++                    55000	2
++                    60000	3
++                    65000	4
++                >;
++            };
++        };
++    };
 +};
 \ No newline at end of file
-diff -Nur a/drivers/staging/fbtft/fb_st7789v.c b/drivers/staging/fbtft/fb_st7789v.c
---- a/drivers/staging/fbtft/fb_st7789v.c	2025-08-10 17:43:01.733460636 +0800
-+++ b/drivers/staging/fbtft/fb_st7789v.c	2025-08-10 17:45:19.041463116 +0800
+diff --git a/drivers/staging/fbtft/fb_st7789v.c b/drivers/staging/fbtft/fb_st7789v.c
+index 861a15414..d2d7d6046 100644
+--- a/drivers/staging/fbtft/fb_st7789v.c
++++ b/drivers/staging/fbtft/fb_st7789v.c
 @@ -13,6 +13,7 @@
  #include <linux/interrupt.h>
  #include <linux/completion.h>
@@ -119,7 +171,7 @@ diff -Nur a/drivers/staging/fbtft/fb_st7789v.c b/drivers/staging/fbtft/fb_st7789
  
  #include <video/mipi_display.h>
  
-@@ -76,6 +77,30 @@
+@@ -76,6 +77,30 @@ enum st7789v_command {
  static struct completion panel_te; /* completion for panel TE line */
  static int irq_te; /* Linux IRQ for LCD TE line */
  
@@ -150,7 +202,7 @@ diff -Nur a/drivers/staging/fbtft/fb_st7789v.c b/drivers/staging/fbtft/fb_st7789
  static irqreturn_t panel_te_handler(int irq, void *data)
  {
  	complete(&panel_te);
-@@ -142,8 +167,25 @@
+@@ -142,8 +167,25 @@ static int init_tearing_effect_line(struct fbtft_par *par)
   */
  static int init_display(struct fbtft_par *par)
  {
@@ -176,7 +228,7 @@ diff -Nur a/drivers/staging/fbtft/fb_st7789v.c b/drivers/staging/fbtft/fb_st7789
  	par->fbtftops.reset(par);
  
  	rc = init_tearing_effect_line(par);
-@@ -379,6 +421,7 @@
+@@ -379,6 +421,7 @@ static struct fbtft_display display = {
  		.set_var = set_var,
  		.set_gamma = set_gamma,
  		.blank = blank,
@@ -184,3 +236,6 @@ diff -Nur a/drivers/staging/fbtft/fb_st7789v.c b/drivers/staging/fbtft/fb_st7789
  	},
  };
  
+-- 
+2.39.5
+

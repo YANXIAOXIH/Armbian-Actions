@@ -1,11 +1,21 @@
-diff -Nur a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c	2025-08-10 17:44:21.713461211 +0800
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c	2025-08-10 17:47:14.277457395 +0800
-@@ -146,6 +146,19 @@
+From 8021382fd8d2edc50b09faeba389f52c02f5a8e6 Mon Sep 17 00:00:00 2001
+From: YANXIAOXIH <yanxiaoxi@live.com>
+Date: Tue, 16 Sep 2025 23:59:22 +0800
+Subject: [PATCH] dw-hdmi-qp: Add default display modes
+
+Signed-off-by: YANXIAOXIH <yanxiaoxi@live.com>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c
+index 2648b7e24..eb4fbe462 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c
+@@ -146,6 +146,18 @@ static const struct dw_hdmi_audio_tmds_n common_tmds_n_table[] = {
  };
  
  static const struct drm_display_mode dw_hdmi_default_modes[] = {
-+	
 +	/* Add default mode for 2560x1440 @ 60Hz (2K) */
 +	{ DRM_MODE("2560x1440", DRM_MODE_TYPE_DRIVER, 241700, 2560, 2608,
 +		2640, 2720, 0, 1440, 1443, 1448, 1481, 0,
@@ -21,3 +31,6 @@ diff -Nur a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c b/drivers/gpu/drm/bridg
  	/* 16 - 1920x1080@60Hz 16:9 */
  	{ DRM_MODE("1920x1080", DRM_MODE_TYPE_DRIVER, 148500, 1920, 2008,
  		   2052, 2200, 0, 1080, 1084, 1089, 1125, 0,
+-- 
+2.39.5
+
