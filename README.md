@@ -1,6 +1,6 @@
 # Armbian-Actions: 自动化 Armbian 构建平台
 
-[![Build Status](https://github.com/YANXIAOXIH/Armbian-Actions/actions/workflows/Build-Armbian-Nightly.yml/badge.svg)](https://github.com/YANXIAOXIH/Armbian-Actions/actions/workflows/Build-Armbian-Nightly.yml)
+[![Build Status](https://github.com/YANXIAOXIH/Armbian-Actions/actions/workflows/Build-Armbian-Stable.yml/badge.svg)](https://github.com/YANXIAOXIH/Armbian-Actions/actions/workflows/Build-Armbian-Stable.yml)
 
 ### 📝 项目概述
 

@@ -1,5 +1,5 @@
 # Workflow Name
-name: "Armbian Build Nightly"
+name: "Armbian Build Stable"
 
 # ====================================================================
 #  TRIGGERS
@@ -11,6 +11,17 @@ on:
     
   workflow_dispatch:
     inputs:
+
+      BOARD:
+        type: choice
+        description: 'Board'
+        options:
+        - lemonpi
+        - som3588-cat
+        - ufi001c
+        - uz801
+        - all
+        default: 'all'
 
       DESKTOP:
         type: choice
@@ -28,7 +39,7 @@ on:
         - xfce
         - xmonad
         - minimal_and_server
-        default: 'server'
+        default: 'minimal_and_server'
 
       ENABLE_EXTENSIONS:
         type: choice
@@ -84,6 +95,7 @@ jobs:
     name: "Prepare Build Parameters & Matrix"
     runs-on: ubuntu-latest
     outputs:
+      BOARD_STRING: ${{ (github.event_name == 'schedule' || inputs.BOARD == 'all') && env.BOARD || inputs.BOARD }}
       DESKTOP: ${{ (github.event_name == 'schedule'|| inputs.DESKTOP == 'minimal_and_server') && '["minimal", "server"]' || format('["{0}"]', inputs.DESKTOP) }}
       DESKTOP_DISPLAY: ${{ github.event_name == 'schedule' && 'minimal, server' || inputs.DESKTOP }}
       ENABLE_EXTENSIONS: ${{ github.event_name == 'schedule' && ' ' || inputs.ENABLE_EXTENSIONS }}
@@ -99,13 +111,13 @@ jobs:
         run: |
           echo "--- Build Parameters ---"
           echo "Trigger: ${{ github.event_name }}"
+          echo "Board: ${{ (github.event_name == 'schedule' || inputs.BOARD == 'all') && env.BOARD || inputs.BOARD }}"
           echo "Desktop: ${{ github.event_name == 'schedule' && '[\"minimal\", \"server\"]' || format('[\"{0}\"]', inputs.DESKTOP) }}"
           echo "NIGHTLY: ${{ github.event_name == 'schedule' && 'no' || inputs.NIGHTLY }}"
           echo "DOCKER: ${{ github.event_name == 'schedule' && 'no' || inputs.DOCKER }}"
           echo "ROOTFS: ${{ github.event_name == 'schedule' && 'ext4' || inputs.ROOTFS }}"
           echo "ENABLE_EXTENSIONS: ${{ github.event_name == 'schedule' && ' ' || inputs.ENABLE_EXTENSIONS }}"
           
-      # <-- ADDED: Get version from the build repo once.
       - name: "Checkout OS Source to get Version"
         uses: actions/checkout@v4
         with:
@@ -122,11 +134,16 @@ jobs:
       - name: "Set and Log Release Matrix"
         id: set_matrix
         run: |
+          # Determine which board list to use with a single, unified expression
+          BOARD_STRING="${{ (github.event_name == 'schedule' || inputs.BOARD == 'all') && env.BOARD || inputs.BOARD }}"
+          
           # Convert space-separated strings from env into JSON arrays for matrix strategies.
           JSON_RELEASE=$(echo "${{ env.RELEASE }}" | jq -c -R 'split(" ") | map(select(. != ""))')
-          JSON_BOARD=$(echo "${{ env.BOARD }}" | jq -c -R 'split(" ") | map(select(. != ""))')
+          JSON_BOARD=$(echo "${BOARD_STRING}" | jq -c -R 'split(" ") | map(select(. != ""))')
+          
           echo "RELEASE=${JSON_RELEASE}" >> $GITHUB_OUTPUT
           echo "BOARD=${JSON_BOARD}" >> $GITHUB_OUTPUT
+          
           echo "--- Release Matrix Generated ---"
           echo "Matrix_RELEASE: ${JSON_RELEASE}"
           echo "Matrix_BOARD: ${JSON_BOARD}"
@@ -342,7 +359,7 @@ jobs:
             COMPRESS_OUTPUTIMAGE="sha,gpg,xz"
 
       - name: "Package Flasher for UFI/UZ Devices"
-        if: contains(fromJson('["ufi001c", "ufi003", "uz801"]'), matrix.BOARD)
+        if: contains(fromJson('["ufi001c", "uz801"]'), matrix.BOARD)
         shell: bash
         run: |
           cd ./build
@@ -454,3 +471,115 @@ jobs:
           replacesArtifacts: false 
           token: ${{ secrets.GITHUB_TOKEN }}
           bodyFile: "body.html"
+
+  # ====================================================================
+  # JOB 4: Update APT Repository
+  # ====================================================================
+  Update_APT_Repo:
+    name: "Update APT Repository"
+    runs-on: ubuntu-latest
+    needs: [Publish_Release]
+    if: success()
+    env:
+      # Expose GPG Key ID for the reprepro script to use for signing.
+      GPG_KEY_ID: ${{ secrets.GPG_SIGNING_KEY_ID }}
+
+    steps:
+      - name: "Download all kernel DEB packages"
+        uses: actions/download-artifact@v4
+        with:
+          pattern: kernel-debs-*
+          path: artifacts/debs
+
+      - name: "Download MonitorPanel DEB fpackages"
+        uses: dsaltares/fetch-gh-release-asset@1.1.0
+        continue-on-error: true
+        with:
+          repo: 'YANXIAOXIH/MonitorPanel'
+          version: 'latest'    
+          file: 'monitorpanel-.*_arm64.deb'
+          target: 'artifacts/debs/monitorpanel/monitorpanel.deb' 
+
+      - name: "Import GPG Key"
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: "Install APT repository tools"
+        run: sudo apt-get update && sudo apt-get install -y reprepro
+
+      - name: "Setup APT Repository Structure"
+        shell: bash
+        run: |
+          # Dynamically create the 'distributions' config file for reprepro.
+          mkdir -p repo/conf
+          > repo/conf/distributions
+          
+          # The repo components are derived from the kernel artifact names (e.g., lemonpi-edge).
+          COMPONENTS="main"
+          for dir in artifacts/debs/kernel-debs-*/; do
+            variant=$(basename "$dir" | sed 's/kernel-debs-//')
+            COMPONENTS="${COMPONENTS} ${variant}"
+          done
+          
+          for codename in $RELEASE; do
+            echo "Generating config for $codename with components:${COMPONENTS}"
+            cat <<EOF >> repo/conf/distributions
+          Origin: Armbian
+          Label: Armbian
+          Codename: ${codename}
+          Architectures: arm64
+          Components: ${COMPONENTS}
+          Description: Custom APT repository for Armbian
+          SignWith: ${{ env.GPG_KEY_ID }}
+
+          EOF
+          done
+          echo "--- APT distributions config ---"
+          cat repo/conf/distributions
+
+      - name: "Add all DEB packages to repository"
+        shell: bash
+        run: |
+          # Use reprepro to add all built .deb packages to the repository.
+          for deb_dir in artifacts/debs/kernel-debs-*/; do
+            component=$(basename "$deb_dir" | sed 's/kernel-debs-//')
+            echo "--- Processing packages from ${deb_dir} for component: ${component} ---"
+            for codename in $RELEASE; do
+              echo "Adding packages to distribution '${codename}' component '${component}'"
+              reprepro -b repo/ -V --ignore=wrongdistribution -C ${component} includedeb ${codename} ${deb_dir}/*.deb
+              if [ $? -ne 0 ]; then
+                  echo "::error::reprepro failed for ${codename}/${component} with packages from ${deb_dir}"
+                  exit 1
+              fi
+            done
+          done
+
+      - name: "Add MonitorPanel DEB package to 'main' component"
+        shell: bash
+        run: |
+          MONITOR_DEB_FILE="artifacts/debs/monitorpanel/monitorpanel.deb"
+
+          if [ -s "$MONITOR_DEB_FILE" ]; then
+            echo "--- Processing MonitorPanel package ---"
+            for codename in $RELEASE; do
+              echo "Adding MonitorPanel to distribution '${codename}' component 'main'"
+              reprepro -b repo/ -V -C main includedeb ${codename} "$MONITOR_DEB_FILE"
+              if [ $? -ne 0 ]; then
+                  echo "::error::reprepro failed for ${codename}/main with MonitorPanel package"
+                  exit 1
+              fi
+            done
+          else
+            echo "::warning::MonitorPanel DEB package not found or empty, skipping."
+          fi
+
+      - name: "Deploy repository to GitHub Pages"
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./repo
+          publish_branch: apt-repo
+          force_orphan: true
+          
