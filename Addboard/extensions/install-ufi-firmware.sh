@@ -139,9 +139,9 @@ function post_install_kernel_debs__install_ufi_firmware_debs() {
     sed -i s/'failsafe-ap'/$BOARD-AP/g $SDCARD/usr/sbin/openstick-button-monitor.sh
     sed -i s/'failsafe-ap'/$BOARD-AP/g $SDCARD/usr/sbin/openstick-gc-manager.sh
     sed -i s/'failsafe-ap'/$BOARD-AP/g $SDCARD/usr/sbin/openstick-startup-diagnose.sh
-    sed -i s/'12345678'/$WIFI_PSK/g $SDCARD/usr/sbin/openstick-button-monitor.sh
-    sed -i s/'12345678'/$WIFI_PSK/g $SDCARD/usr/sbin/openstick-gc-manager.sh
-    sed -i s/'12345678'/$WIFI_PSK/g $SDCARD/usr/sbin/openstick-startup-diagnose.sh
+    sed -i s/'00000000'/$WIFI_PSK/g $SDCARD/usr/sbin/openstick-button-monitor.sh
+    sed -i s/'00000000'/$WIFI_PSK/g $SDCARD/usr/sbin/openstick-gc-manager.sh
+    sed -i s/'00000000'/$WIFI_PSK/g $SDCARD/usr/sbin/openstick-startup-diagnose.sh
     sed -i s/'192.168.69.1'/192.168.5.1/g $SDCARD/usr/sbin/openstick-button-monitor.sh
     sed -i s/'192.168.69.1'/192.168.5.1/g $SDCARD/usr/sbin/openstick-gc-manager.sh
     sed -i s/'192.168.69.1'/192.168.5.1/g $SDCARD/usr/sbin/openstick-startup-diagnose.sh
