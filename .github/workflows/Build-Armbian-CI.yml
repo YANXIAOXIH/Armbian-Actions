@@ -75,7 +75,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  RELEASE: "plucky noble bookworm trixie"
+  RELEASE: "plucky noble trixie"
   BOARD: "lemonpi som3588-cat ufi001c uz801"
 
 # ====================================================================
