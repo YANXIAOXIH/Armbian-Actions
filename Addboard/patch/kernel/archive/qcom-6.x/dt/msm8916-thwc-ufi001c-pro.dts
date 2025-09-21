@@ -21,7 +21,7 @@
 		cpu0-1-thermal {
 			trips {
 				trip_medium_speed_01: trip-point-medium-01 {
-					temperature = <60000>;
+					temperature = <55000>;
 					hysteresis = <2000>;
 					type = "active";
 				};
@@ -48,7 +48,7 @@
 		cpu2-3-thermal {
 			trips {
 				trip_medium_speed_23: trip-point-medium-23 {
-					temperature = <60000>;
+					temperature = <55000>;
 					hysteresis = <2000>;
 					type = "active";
 				};
