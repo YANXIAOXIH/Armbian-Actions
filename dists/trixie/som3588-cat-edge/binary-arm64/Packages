@@ -1,0 +1,136 @@
+Package: armbian-bsp-cli-som3588-cat-edge
+Version: 25.11.0-trunk.246
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Recommends: bsdutils, parted, util-linux, toilet
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-edge/a/armbian-bsp-cli-som3588-cat-edge/armbian-bsp-cli-som3588-cat-edge_25.11.0-trunk.246_arm64.deb
+Size: 433924
+SHA256: 5207e6c568bfe123727e673c3bd7eba7551b98f219d8bd510276b7da93b3b9a1
+SHA1: ccf47f0621fd232eb65bdf335f7ed81f2051857a
+MD5sum: 0c328fcaec810c16e3b2e36a5e110d69
+Description: Armbian CLI BSP for board 'som3588-cat' branch 'edge' 
+Installed-Size: 1414
+Armbian-Original-Hash: 1-PCc91e-V8323-H2670-B1e5d-R756d
+Depends: bash, linux-base, u-boot-tools, initramfs-tools, lsb-release, fping, device-tree-compiler, base-files (>= 25.11.0-trunk.246)
+Replaces: zram-config, armbian-bsp-cli-som3588-cat (<< 25.11.0-trunk.246)
+Breaks: armbian-bsp-cli-som3588-cat (<< 25.11.0-trunk.246)
+Provides: armbian-bsp-cli
+
+Package: armbian-firmware
+Version: 25.11.0-trunk.246
+Architecture: all
+Maintainer: Armbian Linux <info@armbian.com>
+Conflicts: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Provides: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-edge/a/armbian-firmware/armbian-firmware_25.11.0-trunk.246_all.deb
+Size: 100213004
+SHA256: 0e4df4b91b0ca90cc4fb774dbe3ef0ada7f72c6839e19f38af4ad546dda4196c
+SHA1: 4756e0951d716af0d6a07463edb7c7639375e3de
+MD5sum: 9f5e3c1539c5c380a6d145f1541be835
+Description: Armbian - Linux firmware
+Installed-Size: 316779
+Armbian-Original-Hash: 1-SAd39a-B6c7f-R448a
+
+Package: linux-dtb-edge-rockchip64
+Version: 25.11.0-trunk.246
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-dtb, linux-dtb-armbian, armbian-edge
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-edge/l/linux-dtb-edge-rockchip64/linux-dtb-edge-rockchip64_25.11.0-trunk.246_arm64.deb
+Size: 924508
+SHA256: 0afc768bcb82c5f318af4759abd1818dfacdf9a1574a7e27cfe971bc692fa760
+SHA1: 90e4b0afecaf53eb5ed66c0cfe1b03f1d24189e0
+MD5sum: 63f3ab6f65755600d23a7e4778a8268f
+Description: Armbian Linux edge DTBs in /boot/dtb-6.16.9-edge-rockchip64
+ This package contains device tree blobs from the Linux kernel, version 6.16.9-edge-rockchip64
+ version "6.16.9" git revision "b0d8acc711981d712a59ee20b073cbc52a4109c5" codename "Baby Opossum Posse" drivers hash "7b250a90_fad80696" patches hash "64f829262aa0d430" .config hash "cb0a25b515ba8fb4" .config hook hash "3d80c515b3e320ac" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "14f4728c1ba803a5"
+Installed-Size: 24090
+Armbian-Original-Hash: 6.16.9-Sb0d8-D7b25-P64f8-Ccb0aH3d80-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-headers-edge-rockchip64
+Version: 25.11.0-trunk.246
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-headers, linux-headers-armbian, armbian-edge
+Depends: make, gcc, libc6-dev, bison, flex, libssl-dev, libelf-dev
+Priority: optional
+Section: devel
+Filename: pool/som3588-cat-edge/l/linux-headers-edge-rockchip64/linux-headers-edge-rockchip64_25.11.0-trunk.246_arm64.deb
+Size: 15134964
+SHA256: 22f25e3e1266e1506a05472db50fc31b7922e34b7ce4b1bcf730174c60e94fee
+SHA1: 4f807e17f151fa23df0da7249b7652077a0e0629
+MD5sum: 64fa1cb9d5136ccbd69fe103a1755d28
+Description: Armbian Linux edge headers 6.16.9-edge-rockchip64
+ This package provides kernel header files for 6.16.9-edge-rockchip64
+ .
+ This is useful for DKMS and building of external modules.
+ version "6.16.9" git revision "b0d8acc711981d712a59ee20b073cbc52a4109c5" codename "Baby Opossum Posse" drivers hash "7b250a90_fad80696" patches hash "64f829262aa0d430" .config hash "cb0a25b515ba8fb4" .config hook hash "3d80c515b3e320ac" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "14f4728c1ba803a5"
+Installed-Size: 82463
+Armbian-Original-Hash: 6.16.9-Sb0d8-D7b25-P64f8-Ccb0aH3d80-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-image-edge-rockchip64
+Version: 25.11.0-trunk.246
+Source: linux-6.16.9
+Armbian-Kernel-Version: 6.16.9
+Armbian-Kernel-Version-Family: 6.16.9-edge-rockchip64
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-image, linux-image-armbian, armbian-edge, wireguard-modules
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-edge/l/linux-6.16.9/linux-image-edge-rockchip64_25.11.0-trunk.246_arm64.deb
+Size: 50414352
+SHA256: 1c6d77177ecedb60efa6bb61774c5db8e270171495091f5252b83070dda6a427
+SHA1: 85ac75fd02fc3ae76b44d2e651bcb1ce7c6e5aea
+MD5sum: 523de2a42d0dca795cc33c0073c129a8
+Description: Armbian Linux edge kernel image 6.16.9-edge-rockchip64
+ This package contains the Linux kernel, modules and corresponding other files.
+ version "6.16.9" git revision "b0d8acc711981d712a59ee20b073cbc52a4109c5" codename "Baby Opossum Posse" drivers hash "7b250a90_fad80696" patches hash "64f829262aa0d430" .config hash "cb0a25b515ba8fb4" .config hook hash "3d80c515b3e320ac" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "14f4728c1ba803a5"
+Installed-Size: 283260
+Armbian-Original-Hash: 6.16.9-Sb0d8-D7b25-P64f8-Ccb0aH3d80-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-libc-dev-edge-rockchip64
+Version: 25.11.0-trunk.246
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-libc-dev
+Conflicts: linux-libc-dev
+Architecture: arm64
+Priority: optional
+Section: devel
+Filename: pool/som3588-cat-edge/l/linux-libc-dev-edge-rockchip64/linux-libc-dev-edge-rockchip64_25.11.0-trunk.246_arm64.deb
+Size: 1418744
+SHA256: 3d6c6928926c094b6be0522618addc7a553fc3585383d5e34663c495fcd0020e
+SHA1: 07d790f64b50a3d79fc5866ffa6ba18dafdbf4e4
+MD5sum: 6a6f24c84fe8a95fa9897e7f216e8dd9
+Description: Armbian Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system libraries.
+Multi-Arch: same
+Installed-Size: 6754
+Armbian-Original-Hash: 6.16.9-Sb0d8-D7b25-P64f8-Ccb0aH3d80-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-u-boot-som3588-cat-edge
+Version: 25.11.0-trunk.246
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: armbian-u-boot
+Replaces: armbian-u-boot
+Conflicts: armbian-u-boot, u-boot-sunxi
+Priority: optional
+Section: kernel
+Filename: pool/som3588-cat-edge/l/linux-u-boot-som3588-cat-edge/linux-u-boot-som3588-cat-edge_25.11.0-trunk.246_arm64.deb
+Size: 1177360
+SHA256: eab0a35bd434acc7088aeea179cd1ca07bb4c7f0db2189de13fa535db58233d8
+SHA1: fcdc18d5676c3ecf043a6f3a172a2430b1160f78
+MD5sum: 8a6203ffed2c2eda6d7a9a0385e720ed
+Description: Das U-Boot for som3588-cat
+ version "2017.09" git revision "a3173ae8a83cb05c78bccfa7cd73ed4b591e67ef" patches hash "6044d075822794d6" Extension hooks hash "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b" uboot functions hash "888a3bf327631b42d3704bf96da81027174341e09564fdb15830cd2d2476cb5f" variables hash "1a8bbffbfe1c796611657a4ee9a788db61d1e47996f831ab72a683ce597c2ea2" framework bash hash "b7035b95c8004ab0"
+Installed-Size: 18425
+Armbian-Original-Hash: 2017.09-Sa317-P6044-H5921-V1a8b-Bb703-R448a
+
