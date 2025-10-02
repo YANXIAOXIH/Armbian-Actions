@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * Copyright (c) 2024 Rockchip Electronics Co., Ltd.
+ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
  * Device Tree Source for LemonPi board on Rockchip RK3588 SoC.
+ * Kernel Version Target: 6.1
  *
  */
 
@@ -431,12 +432,12 @@
 		reg = <0x21>;
 		gpio-controller;
 		#gpio-cells = <2>;
-		// pinctrl-names = "default";
-		// pinctrl-0 = <&pinctrl_pca9535_1>;
-		// interrupt-parent = <&gpio2>;
-		// interrupts = <RK_PC4 IRQ_TYPE_LEVEL_LOW>;
-		// interrupt-controller;
-		// #interrupt-cells = <2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pca9535_1>;
+		interrupt-parent = <&gpio2>;
+		interrupts = <RK_PC4 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
 	};
 };
 
@@ -453,12 +454,12 @@
 		reg = <0x21>;
 		gpio-controller;
 		#gpio-cells = <2>;
-		// pinctrl-names = "default";
-		// pinctrl-0 = <&pinctrl_pca9535_2>;
-		// interrupt-parent = <&gpio2>;
-		// interrupts = <RK_PC5 IRQ_TYPE_LEVEL_LOW>;
-		// interrupt-controller;
-		// #interrupt-cells = <2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pca9535_2>;
+		interrupt-parent = <&gpio2>;
+		interrupts = <RK_PC5 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
 	};
 };
 
@@ -1280,7 +1281,6 @@
 			 &gmac0_rgmii_clk
 			 &gmac0_rgmii_bus>;
 	tx_delay = <0x20>;
-	phy-supply = <&vcc3v3_sys>;
 	phy-handle = <&rgmii_phy0>;
 	status = "okay";
 };
@@ -1299,7 +1299,6 @@
 			 &gmac1_rgmii_clk
 			 &gmac1_rgmii_bus>;
 	tx_delay = <0x20>;
-	phy-supply = <&vcc3v3_sys>;
 	phy-handle = <&rgmii_phy1>;
 	status = "okay";
 };
@@ -1317,7 +1316,7 @@
 &mdio1 {
 	rgmii_phy1: phy@0 {
 		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <0x01>;
+		reg = <0x00>;
 		realtek,led-data = <0x6d60>;
 	};
 };
@@ -1344,7 +1343,6 @@
 &pcie2x1l0 {
 	reset-gpios = <&gpio4 RK_PA5 GPIO_ACTIVE_HIGH>;
 	disable-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc3v3_sys>;
 	status = "okay";
 };
 
@@ -1359,7 +1357,6 @@
 	pinctrl-0 = <&pcie_disable_pin>;
 	reset-gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_HIGH>;
 	disable-gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_HIGH>;
-	vpcie3v3-supply = <&vcc3v3_sys>;
 	status = "disabled";
 };
 
@@ -1573,12 +1570,12 @@
 
 /* Display subsystem */
 &display_subsystem {
-	clocks = <&hdptxphy_hdmi1>;
+	clocks = <&hdptxphy_hdmi_clk1>;
 	clock-names = "hdmi1_phy_pll";
 };
 
 /* HDMI1 TX PHY */
-&hdptxphy_hdmi1 {
+&hdptxphy_hdmi_clk1 {
 	status = "okay";
 };
 
@@ -1689,10 +1686,10 @@
 	/* IO expander interrupt pins */
 	io {
 		pinctrl_pca9535_1: pinctrl-pca9535-1 {
-			rockchip,pins = <2 RK_PC4 RK_FUNC_GPIO &pcfg_pull_up>;
+			rockchip,pins = <2 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 		pinctrl_pca9535_2: pinctrl-pca9535-2 {
-			rockchip,pins = <2 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
+			rockchip,pins = <2 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
