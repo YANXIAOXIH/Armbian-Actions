@@ -1,0 +1,5 @@
+Component: uz801-edge
+Origin: Armbian
+Label: Armbian
+Architecture: arm64
+Description: Custom APT repository for Armbian
