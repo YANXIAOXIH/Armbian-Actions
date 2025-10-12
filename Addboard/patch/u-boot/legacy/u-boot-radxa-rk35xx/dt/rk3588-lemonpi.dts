@@ -92,6 +92,7 @@
 /* PCIe2x1l2 slot */
 &pcie2x1l2 {
 	u-boot,dm-pre-reloc;
+	status = "disabled";
 };
 
 /* PCIe2x1l2 intc */
