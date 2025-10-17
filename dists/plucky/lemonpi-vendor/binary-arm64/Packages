@@ -1,0 +1,136 @@
+Package: armbian-bsp-cli-lemonpi-vendor
+Version: 25.11.0-trunk.336
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Recommends: bsdutils, parted, util-linux, toilet
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-vendor/a/armbian-bsp-cli-lemonpi-vendor/armbian-bsp-cli-lemonpi-vendor_25.11.0-trunk.336_arm64.deb
+Size: 434136
+SHA256: 3690f266b039f6fc11ff4953569179c029b41a4c7997c9accd52642d6e439ee9
+SHA1: d40755829697e1619da45de217198593a670e0ef
+MD5sum: 2c4267d3c79403a95fc601291e44a8a6
+Description: Armbian CLI BSP for board 'lemonpi' branch 'vendor' 
+Installed-Size: 1415
+Armbian-Original-Hash: 1-PC4b3b-V11cd-H2670-B1e5d-R756d
+Depends: bash, linux-base, u-boot-tools, initramfs-tools, lsb-release, fping, device-tree-compiler, base-files (>= 25.11.0-trunk.336)
+Replaces: zram-config, armbian-bsp-cli-lemonpi (<< 25.11.0-trunk.336)
+Breaks: armbian-bsp-cli-lemonpi (<< 25.11.0-trunk.336)
+Provides: armbian-bsp-cli
+
+Package: armbian-firmware
+Version: 25.11.0-trunk.336
+Architecture: all
+Maintainer: Armbian Linux <info@armbian.com>
+Conflicts: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Provides: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-vendor/a/armbian-firmware/armbian-firmware_25.11.0-trunk.336_all.deb
+Size: 100213616
+SHA256: b84074aa05d1018cdc06ed1aa2654c41f73ced3aac3fbefaf5d91417ed20ee86
+SHA1: 86e56223b02f1af3f59eb831dd38cf96633b5cbc
+MD5sum: 33803ab112af36797a03abeed936a7e8
+Description: Armbian - Linux firmware
+Installed-Size: 316802
+Armbian-Original-Hash: 1-SAd39a-B6c7f-R448a
+
+Package: linux-dtb-vendor-rk35xx
+Version: 25.11.0-trunk.336
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-dtb, linux-dtb-armbian, armbian-vendor
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-vendor/l/linux-dtb-vendor-rk35xx/linux-dtb-vendor-rk35xx_25.11.0-trunk.336_arm64.deb
+Size: 2471228
+SHA256: a34bb69921836461b1efc98ff9df68fc5539e3d421f5387c765ac76c38e6e52b
+SHA1: dd15ef199cc6a65c5ac7e99dd1383123ca337568
+MD5sum: b9678d4b1c41e305584718d168edf9eb
+Description: Armbian Linux vendor DTBs in /boot/dtb-6.1.115-vendor-rk35xx
+ This package contains device tree blobs from the Linux kernel, version 6.1.115-vendor-rk35xx
+ version "6.1.115" git revision "bd032d59a096344a1f29acf9965d8c46f9a847a8" codename "Curry Ramen" drivers hash "3817f8b4_d15788c1" patches hash "7e8229921517acf7" .config hash "3b8b51585f33c412" .config hook hash "7b8fa38f1d95884f" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "14f4728c1ba803a5"
+Installed-Size: 85962
+Armbian-Original-Hash: 6.1.115-Sbd03-D3817-P7e82-C3b8bH7b8f-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-headers-vendor-rk35xx
+Version: 25.11.0-trunk.336
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-headers, linux-headers-armbian, armbian-vendor
+Depends: make, gcc, libc6-dev, bison, flex, libssl-dev, libelf-dev
+Priority: optional
+Section: devel
+Filename: pool/lemonpi-vendor/l/linux-headers-vendor-rk35xx/linux-headers-vendor-rk35xx_25.11.0-trunk.336_arm64.deb
+Size: 14012380
+SHA256: 36f16481232bf06a3844c9103adbfc530a57cdcfe61368c634e89da7ff855b30
+SHA1: 190a77129d75bf93592f3b9b4290dd6cbc9f6ab8
+MD5sum: a36aee97cf3223cca46a0f5cdba132e4
+Description: Armbian Linux vendor headers 6.1.115-vendor-rk35xx
+ This package provides kernel header files for 6.1.115-vendor-rk35xx
+ .
+ This is useful for DKMS and building of external modules.
+ version "6.1.115" git revision "bd032d59a096344a1f29acf9965d8c46f9a847a8" codename "Curry Ramen" drivers hash "3817f8b4_d15788c1" patches hash "7e8229921517acf7" .config hash "3b8b51585f33c412" .config hook hash "7b8fa38f1d95884f" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "14f4728c1ba803a5"
+Installed-Size: 75067
+Armbian-Original-Hash: 6.1.115-Sbd03-D3817-P7e82-C3b8bH7b8f-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-image-vendor-rk35xx
+Version: 25.11.0-trunk.336
+Source: linux-6.1.115
+Armbian-Kernel-Version: 6.1.115
+Armbian-Kernel-Version-Family: 6.1.115-vendor-rk35xx
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-image, linux-image-armbian, armbian-vendor, wireguard-modules
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-vendor/l/linux-6.1.115/linux-image-vendor-rk35xx_25.11.0-trunk.336_arm64.deb
+Size: 37441504
+SHA256: 84686ed93180f7eef199b4f7ad6bd0afc0921041a94eb9ba7440cb1f2419267a
+SHA1: 94d8ca13ab9de9800f567114396d5ed9c0561760
+MD5sum: 7fed634438dd06cb0e64fc7af40caa54
+Description: Armbian Linux vendor kernel image 6.1.115-vendor-rk35xx
+ This package contains the Linux kernel, modules and corresponding other files.
+ version "6.1.115" git revision "bd032d59a096344a1f29acf9965d8c46f9a847a8" codename "Curry Ramen" drivers hash "3817f8b4_d15788c1" patches hash "7e8229921517acf7" .config hash "3b8b51585f33c412" .config hook hash "7b8fa38f1d95884f" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "14f4728c1ba803a5"
+Installed-Size: 275661
+Armbian-Original-Hash: 6.1.115-Sbd03-D3817-P7e82-C3b8bH7b8f-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-libc-dev-vendor-rk35xx
+Version: 25.11.0-trunk.336
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-libc-dev
+Conflicts: linux-libc-dev
+Architecture: arm64
+Priority: optional
+Section: devel
+Filename: pool/lemonpi-vendor/l/linux-libc-dev-vendor-rk35xx/linux-libc-dev-vendor-rk35xx_25.11.0-trunk.336_arm64.deb
+Size: 1340184
+SHA256: 4e98c33233f75c9225afa86d3047755a76384030bcd1a34e472ed9a83538e3ba
+SHA1: e3db8ef1275c063e94ab6c90cbdfd8c08eedaaee
+MD5sum: 7562816887cf61a29aa23d362f4e1ab5
+Description: Armbian Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system libraries.
+Multi-Arch: same
+Installed-Size: 6497
+Armbian-Original-Hash: 6.1.115-Sbd03-D3817-P7e82-C3b8bH7b8f-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-u-boot-lemonpi-vendor
+Version: 25.11.0-trunk.336
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: armbian-u-boot
+Replaces: armbian-u-boot
+Conflicts: armbian-u-boot, u-boot-sunxi
+Priority: optional
+Section: kernel
+Filename: pool/lemonpi-vendor/l/linux-u-boot-lemonpi-vendor/linux-u-boot-lemonpi-vendor_25.11.0-trunk.336_arm64.deb
+Size: 1177652
+SHA256: 392f242c6d151f690453a00643915530234361ac1eaca7b79be627349e0abe0e
+SHA1: 5ebcf0848cffa76dfde5d2752990b1ddb836764c
+MD5sum: 1de30a2575cabfa7fe9569c32b50c578
+Description: Das U-Boot for lemonpi
+ version "2017.09" git revision "afea3a7b68ae8af25ab6a8a56f27ca5eefabcd2d" patches hash "81fbce65fd8b7ab2" Extension hooks hash "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b" uboot functions hash "ab15ec6d8fb96e6b3b9527d908ce313bfcc51909569a3fbfad42145d7555b60e" variables hash "693e11382c04d55c23a0d4830e62fa44a4af589310da12a32f9966c7d048c531" framework bash hash "b7035b95c8004ab0"
+Installed-Size: 18426
+Armbian-Original-Hash: 2017.09-Safea-P81fb-H28b4-V693e-Bb703-R448a
+

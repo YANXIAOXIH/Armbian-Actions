@@ -1,0 +1,110 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Origin: Armbian
+Label: Armbian
+Codename: trixie
+Date: Fri, 17 Oct 2025 06:12:24 UTC
+Architectures: arm64
+Components: main lemonpi-edge lemonpi-vendor som3588-cat-edge som3588-cat-vendor ufi001c-edge ufi001c-vendor uz801-edge uz801-vendor
+Description: Custom APT repository for Armbian
+MD5Sum:
+ d41d8cd98f00b204e9800998ecf8427e 0 main/binary-arm64/Packages
+ 7029066c27ac6f5ef18d660d5741979a 20 main/binary-arm64/Packages.gz
+ 9a463abafe34882a4ba695a50909e5dd 114 main/binary-arm64/Release
+ fc6f9cea6acba6dcd77466db285e519c 7285 lemonpi-edge/binary-arm64/Packages
+ 7f7ed3d872da2b224d36d7943cc165df 2378 lemonpi-edge/binary-arm64/Packages.gz
+ 2e703adc0cb204adb96b6fb1654c017c 122 lemonpi-edge/binary-arm64/Release
+ b75ae51e0a2388395f2dae20a9ab86c6 7287 lemonpi-vendor/binary-arm64/Packages
+ ffc57e5729e683472a16b2122b0874bf 2369 lemonpi-vendor/binary-arm64/Packages.gz
+ a82df8a5aef532b26812a7594f4a9f08 124 lemonpi-vendor/binary-arm64/Release
+ 77acd1e9aa3209c8648c28b0994f3ed4 7353 som3588-cat-edge/binary-arm64/Packages
+ 071cf161fa198f3cc247e04a315d82cf 2379 som3588-cat-edge/binary-arm64/Packages.gz
+ 1f6534305b2ef16980fd70fbcf997a82 126 som3588-cat-edge/binary-arm64/Release
+ f144023bf968a724fd8b9e7f912835a5 7355 som3588-cat-vendor/binary-arm64/Packages
+ e54919057dba6d93d04cad099ce78029 2373 som3588-cat-vendor/binary-arm64/Packages.gz
+ 31edc0b4b1bb45a4bfabdcef7408ff9f 128 som3588-cat-vendor/binary-arm64/Release
+ a14d469c08bd1074986bfb784c903864 6161 ufi001c-edge/binary-arm64/Packages
+ deea1d540a89383c90c032a94424ba3c 1971 ufi001c-edge/binary-arm64/Packages.gz
+ 5baea718718853da21bcf0cafcb190e6 122 ufi001c-edge/binary-arm64/Release
+ c925ff95c2148d468cc7f80b46c89acc 6176 ufi001c-vendor/binary-arm64/Packages
+ 6121cfa480987d193b15b09f0696e779 1976 ufi001c-vendor/binary-arm64/Packages.gz
+ 772add6f49f6bcbd277a0cf6730223a2 124 ufi001c-vendor/binary-arm64/Release
+ a7e7f8f0e771da48761cfe26d57648ad 6137 uz801-edge/binary-arm64/Packages
+ e54744af38f64cfad5b433a0139c0f02 1971 uz801-edge/binary-arm64/Packages.gz
+ 12c43394234356f11fbb2464cf1acffe 120 uz801-edge/binary-arm64/Release
+ b9712b38e46187914bd6f1d840f26f2e 6152 uz801-vendor/binary-arm64/Packages
+ 26d9283ad53ae2eafb2523c6c10921d3 1970 uz801-vendor/binary-arm64/Packages.gz
+ d89f861e285f79cb2749868150c4fc73 122 uz801-vendor/binary-arm64/Release
+SHA1:
+ da39a3ee5e6b4b0d3255bfef95601890afd80709 0 main/binary-arm64/Packages
+ 46c6643f07aa7f6bfe7118de926b86defc5087c4 20 main/binary-arm64/Packages.gz
+ 8b98a0719036817f16a37f5bbe4598e1374fc1de 114 main/binary-arm64/Release
+ 8d96ba7316bf1086c77fd13595d725cb7d2e77cb 7285 lemonpi-edge/binary-arm64/Packages
+ 5b5bcc377e5b02132a540b634eac6a6fad2743b6 2378 lemonpi-edge/binary-arm64/Packages.gz
+ a93c47f493010c613cdf7c2193fbbbf2a2bb6f1c 122 lemonpi-edge/binary-arm64/Release
+ 6ebd77a1667e1fe73c2ce8ff68c5340bf5c98a79 7287 lemonpi-vendor/binary-arm64/Packages
+ c27a2d2eee458822e7b184a078089fe4fec48d35 2369 lemonpi-vendor/binary-arm64/Packages.gz
+ 687511b87ee51ad0b1e701cbc47f77c97493a2f4 124 lemonpi-vendor/binary-arm64/Release
+ 320fc1e51becc7fb94f5277a5a6c92f0768bdc69 7353 som3588-cat-edge/binary-arm64/Packages
+ 6a26917f849d99c3765131f55a8776d1ac6cd033 2379 som3588-cat-edge/binary-arm64/Packages.gz
+ 3a1b32ffcdd089be5d9d1a9d094dcbeeb76acf28 126 som3588-cat-edge/binary-arm64/Release
+ 797674259c4a6ce6eeda9014c56b9366672485bd 7355 som3588-cat-vendor/binary-arm64/Packages
+ d501c58145ff270557c99dddee9fe86ef2f46bd6 2373 som3588-cat-vendor/binary-arm64/Packages.gz
+ 6733e5ce9b9c4fa1ecfd773795008cc60a72b9a7 128 som3588-cat-vendor/binary-arm64/Release
+ 56535d83c1007575b43cea695e0927ec91288abd 6161 ufi001c-edge/binary-arm64/Packages
+ 186e7da16c921658a23d5d4dd85c2fbd892f2fa0 1971 ufi001c-edge/binary-arm64/Packages.gz
+ 291e8bb6fdaf170488cea27b97420fe404fe65fe 122 ufi001c-edge/binary-arm64/Release
+ 2d1eda7cb702cc8dca7a847724df20591470ecb4 6176 ufi001c-vendor/binary-arm64/Packages
+ 95c8e66b02284e8c505f0826f0159bae711821f6 1976 ufi001c-vendor/binary-arm64/Packages.gz
+ 1e6c25812f4ff3aa15a5cab20087280eb8b7464c 124 ufi001c-vendor/binary-arm64/Release
+ 9f219f1216342b4fc8e71afe05d12dc7fd87d9f5 6137 uz801-edge/binary-arm64/Packages
+ d0c74fc35809c27e1650a92833ed05f47ba63f93 1971 uz801-edge/binary-arm64/Packages.gz
+ 70b26e9d0566ef8b48cb4772e06ba1ae32ced0e0 120 uz801-edge/binary-arm64/Release
+ 90254ec17bccf6bfc421a634c32a2abc90e9ad03 6152 uz801-vendor/binary-arm64/Packages
+ 7cff66f5b1302571fcace2ec7247dc958715e4e0 1970 uz801-vendor/binary-arm64/Packages.gz
+ 5a611c139d2d71feaea69534ca2e76d789fe478f 122 uz801-vendor/binary-arm64/Release
+SHA256:
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 main/binary-arm64/Packages
+ 59869db34853933b239f1e2219cf7d431da006aa919635478511fabbfc8849d2 20 main/binary-arm64/Packages.gz
+ 90f66ac7e53f55062e16abc59cd67cdb81b1cfbfbb3567b24e7ecf75720cf9ec 114 main/binary-arm64/Release
+ 27603cc162a729d08caf3fc39cfa16558afd2bc9d7ad19b198f3306755b66238 7285 lemonpi-edge/binary-arm64/Packages
+ 2f27294b939122806b2399dca0725c0b2b43e41d16a0e5aecb640e00f4433aa2 2378 lemonpi-edge/binary-arm64/Packages.gz
+ afe31e80b07190a87a39eceadbc11bbcf96e672d3e2dde12e33d68aa16551cf3 122 lemonpi-edge/binary-arm64/Release
+ 12d52fac58c0a4f87754051294eacc211b27b14ebc265944828fb67aa61d887e 7287 lemonpi-vendor/binary-arm64/Packages
+ 4aaee4cc10b5716ecd3a0ca81822be7cd35241d2237c6b25aba523a96b77f4c9 2369 lemonpi-vendor/binary-arm64/Packages.gz
+ 2f5025d84cdeab4c2cd64fc5b5549cba3265dc8259c70803f880776356c66ae8 124 lemonpi-vendor/binary-arm64/Release
+ 8a71a53cd00db0b127026a58959fedbbb79d252866c6ebd4857e3b6bec2052a4 7353 som3588-cat-edge/binary-arm64/Packages
+ eaed3b9b3197f6c3f1e239a6acc1c03e97a6a12e6da11c4ff6ba66581032d170 2379 som3588-cat-edge/binary-arm64/Packages.gz
+ 11a44d198b9e562aa5494160ca1244ade12f3b19b2d86c3e5a30434a37500f15 126 som3588-cat-edge/binary-arm64/Release
+ f809721d7238d89347a90d581aa926ce45a1bed588e0c09c7620fde015b0ade8 7355 som3588-cat-vendor/binary-arm64/Packages
+ 6ffccb5aaba0b7e791713f2b0c2adae6ec96915a1e8a633e1c6b7e05e4ebc5f2 2373 som3588-cat-vendor/binary-arm64/Packages.gz
+ c45b8924d6b1196ee67da5e6429dab8d10d3eed7d6b42bc305cd2b019f8099cf 128 som3588-cat-vendor/binary-arm64/Release
+ 88cf529faf13b1a8a3ae3458663a965a37f5209ea7477f4ed28e69d4f5ee7e94 6161 ufi001c-edge/binary-arm64/Packages
+ 2b17bd35ace74490c1c03a833acc7d95468de39bfa2f1bd3fdabf79f8f4befcf 1971 ufi001c-edge/binary-arm64/Packages.gz
+ d4aa11bf64557fd138555ff5755ae7440d567aa63e9ba9c6792d7f88b8f4f701 122 ufi001c-edge/binary-arm64/Release
+ 9a1c08b36181b01c5aa0993912882d5e453dcfccb930db2fbf7feec22e674390 6176 ufi001c-vendor/binary-arm64/Packages
+ dec4e583e224d09d84241b81365229f97c54afcc33e063a80f96f05b02c5e581 1976 ufi001c-vendor/binary-arm64/Packages.gz
+ 5526f67e467775f78456c3efdf4dc72ed53383106058d441916c79a23d0a99f3 124 ufi001c-vendor/binary-arm64/Release
+ 6305e27f3575974d99287f8ec596a7a1c01d99c25d4d329633b33d64fa462a42 6137 uz801-edge/binary-arm64/Packages
+ 243daed256d75f5be34687dba6aa7a82824b4dbea3d824c01d1b899328a6145c 1971 uz801-edge/binary-arm64/Packages.gz
+ 0ee4c3bc9475157c38fe6d17d8d5cb8fbb98f42e6e06a1409a07f1dbe2ac2b78 120 uz801-edge/binary-arm64/Release
+ 9ae6893d09c73cad906fd1aee6d49132619b9ad3d1ae949629b69d5eab6521a1 6152 uz801-vendor/binary-arm64/Packages
+ e45aa9f244d69dcbfe0154221e9c6f4af79b4ae71aa3025e3e3331426d7e61ac 1970 uz801-vendor/binary-arm64/Packages.gz
+ 7983ba071c9123693896d064ddc4e8fb046ed9f9e55f61c2e4ca2a1eef8ad0fd 122 uz801-vendor/binary-arm64/Release
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEUcDBtVJaelRTeEGfsUd6MHbiZBIFAmjx3kgACgkQsUd6MHbi
+ZBIl4g//YzFEdao6aqqgWg8bbnf8pK/f6tfkzFFNN0fg8hl2KMuUVH6Q1kTU7I3L
+pCmcb4r/Bo5dWpACK9UXfhf8XLcARzzgU6a9snFyZbpaKPE4HaqF73de4peHl9te
+MgX4XUtJ6x4ACTQ4e37UOIu4TI0bWqfMXtT+DRRunzOpk5YwGoQkmvj4CEOKRFtJ
+LiuzYB2KGLtX7PpBFHSiOlSfPNX42v5Usy+hA6I/KKEspVi4B9j6ej8+rmKXfA2p
+kVsC7qeDahlvKjimCymyoGOR3nhpkKEAQAJeFukRr17Zl5/ZWxz4Ov4yKGgjbb+v
+GzzIQNX2VsprfuQ/ASUxwzJuCzbQkG6/cNn+ZaCEPnH/m3IbmtmxdGBYcdyxszs7
+Zy5EGtG/2k9ZEO7t7Z+igxa6t8Gdo609x0GLztOeGpOs7ouAjVJ9dPSJazHzBqMw
+M3V3S9o6LpCskUGrzxAe3y0fqTzGNttZDZkmqWndpKc/MEq3o+DaULk0Crj/CLX4
+FQUvyUk6co0Ipi5w3qdlW46o6jxVlRu7terrVvfTKIWKbyqI7L9FzMxeDWj7qomi
+DkGShydhisBBTdav0KbwAAnAExkc7xWL5c7sJsqX5ON6/d9bV6fqPL1LjjtElKGw
+uKzkcs1d6bvNlV7ehwju/6JSEFdijO3htzCAM0T/C67qhMuf7ig=
+=PsfI
+-----END PGP SIGNATURE-----

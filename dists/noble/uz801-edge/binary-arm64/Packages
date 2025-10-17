@@ -1,0 +1,117 @@
+Package: armbian-bsp-cli-uz801-edge
+Version: 25.11.0-trunk.336
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Recommends: bsdutils, parted, util-linux, toilet
+Priority: optional
+Section: kernel
+Filename: pool/uz801-edge/a/armbian-bsp-cli-uz801-edge/armbian-bsp-cli-uz801-edge_25.11.0-trunk.336_arm64.deb
+Size: 432532
+SHA256: 36802403e24684c6a242db713aa93bf0a11372bc9515ad1751449dec140c315b
+SHA1: bca45d8fd0e2b36a438c77419738cba65f22661e
+MD5sum: 149a9a69f057ab9f0333629853f82566
+Description: Armbian CLI BSP for board 'uz801' branch 'edge' 
+Installed-Size: 1409
+Armbian-Original-Hash: 1-PC4b3b-Vdfb9-H2670-B1e5d-R756d
+Depends: bash, linux-base, u-boot-tools, initramfs-tools, lsb-release, fping, device-tree-compiler, base-files (>= 25.11.0-trunk.336)
+Replaces: zram-config, armbian-bsp-cli-uz801 (<< 25.11.0-trunk.336)
+Breaks: armbian-bsp-cli-uz801 (<< 25.11.0-trunk.336)
+Provides: armbian-bsp-cli
+
+Package: armbian-firmware
+Version: 25.11.0-trunk.336
+Architecture: all
+Maintainer: Armbian Linux <info@armbian.com>
+Conflicts: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Provides: linux-firmware, firmware-brcm80211, firmware-ralink, firmware-samsung, firmware-realtek, armbian-firmware-full
+Priority: optional
+Section: kernel
+Filename: pool/uz801-edge/a/armbian-firmware/armbian-firmware_25.11.0-trunk.336_all.deb
+Size: 100213620
+SHA256: 147f8affaec3f0b54fda5731dc9cc0d6e918e2697ee6030fcb2791258ddf7dfa
+SHA1: 374676f80fba193894630c56287053d1d6e1555f
+MD5sum: cdd52b7fce473546492e117a033b5885
+Description: Armbian - Linux firmware
+Installed-Size: 316802
+Armbian-Original-Hash: 1-SAd39a-B6c7f-R448a
+
+Package: linux-dtb-edge-qcom
+Version: 25.11.0-trunk.336
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-dtb, linux-dtb-armbian, armbian-edge
+Priority: optional
+Section: kernel
+Filename: pool/uz801-edge/l/linux-dtb-edge-qcom/linux-dtb-edge-qcom_25.11.0-trunk.336_arm64.deb
+Size: 826780
+SHA256: 193a28a2188905a7df19caeafa78aacd54a530f2a6da34e3a30061bdb8869402
+SHA1: 699231142f2f9809d9ef4c48ca7ad4932c57e0b5
+MD5sum: 526c3ccd091383ca0dc3aeab372a2015
+Description: Armbian Linux edge DTBs in /boot/dtb-6.17.0-rc6-edge-qcom
+ This package contains device tree blobs from the Linux kernel, version 6.17.0-rc6-edge-qcom
+ version "6.17.0-rc6" git revision "aa28619bf89bf33274102855d5105b92443f12b7" codename "Baby Opossum Posse" drivers hash "0000000000000000" patches hash "5e5f40e1072e61e2" .config hash "abf68725f5b3eee9" .config hook hash "3e0d47506def5c17" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "14f4728c1ba803a5"
+Installed-Size: 24029
+Armbian-Original-Hash: 6.17-rc6-Saa28-D0000-P5e5f-Cabf6H3e0d-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-headers-edge-qcom
+Version: 25.11.0-trunk.336
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Architecture: arm64
+Provides: linux-headers, linux-headers-armbian, armbian-edge
+Depends: make, gcc, libc6-dev, bison, flex, libssl-dev, libelf-dev
+Priority: optional
+Section: devel
+Filename: pool/uz801-edge/l/linux-headers-edge-qcom/linux-headers-edge-qcom_25.11.0-trunk.336_arm64.deb
+Size: 15058448
+SHA256: f8397c51ce317f2e8dada5b9e0fc092c907c4f4b93206b3b5108962db292444b
+SHA1: 25598b1dcb739aa6b5503b723d131b4694b70d4b
+MD5sum: 2219c77e9e16869a9b573883021c8af6
+Description: Armbian Linux edge headers 6.17.0-rc6-edge-qcom
+ This package provides kernel header files for 6.17.0-rc6-edge-qcom
+ .
+ This is useful for DKMS and building of external modules.
+ version "6.17.0-rc6" git revision "aa28619bf89bf33274102855d5105b92443f12b7" codename "Baby Opossum Posse" drivers hash "0000000000000000" patches hash "5e5f40e1072e61e2" .config hash "abf68725f5b3eee9" .config hook hash "3e0d47506def5c17" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "14f4728c1ba803a5"
+Installed-Size: 81870
+Armbian-Original-Hash: 6.17-rc6-Saa28-D0000-P5e5f-Cabf6H3e0d-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-image-edge-qcom
+Version: 25.11.0-trunk.336
+Source: linux-6.17.0-rc6
+Armbian-Kernel-Version: 6.17.0-rc6
+Armbian-Kernel-Version-Family: 6.17.0-rc6-edge-qcom
+Architecture: arm64
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-image, linux-image-armbian, armbian-edge, wireguard-modules
+Priority: optional
+Section: kernel
+Filename: pool/uz801-edge/l/linux-6.17.0-rc6/linux-image-edge-qcom_25.11.0-trunk.336_arm64.deb
+Size: 15382620
+SHA256: 9dba713de4ca8f75114b99f8b77092ce2661f6f628d53f7d15f9e74b857c3c41
+SHA1: a1483b3685a41497f68a58a2ce5df99f4e5a96ad
+MD5sum: 857b1fc4d020a83d3cd26d8c6115b5fe
+Description: Armbian Linux edge kernel image 6.17.0-rc6-edge-qcom
+ This package contains the Linux kernel, modules and corresponding other files.
+ version "6.17.0-rc6" git revision "aa28619bf89bf33274102855d5105b92443f12b7" codename "Baby Opossum Posse" drivers hash "0000000000000000" patches hash "5e5f40e1072e61e2" .config hash "abf68725f5b3eee9" .config hook hash "3e0d47506def5c17" variables hash "c22207b66dc5dd57157df2cd7b9c20559b2ed8ac44b9c3c3b9704002c06b8921" framework bash hash "14f4728c1ba803a5"
+Installed-Size: 86609
+Armbian-Original-Hash: 6.17-rc6-Saa28-D0000-P5e5f-Cabf6H3e0d-HK01ba-Vc222-B14f4-R448a
+
+Package: linux-libc-dev-edge-qcom
+Version: 25.11.0-trunk.336
+Maintainer: John Doe <john.doe@somewhere.on.planet>
+Provides: linux-libc-dev
+Conflicts: linux-libc-dev
+Architecture: arm64
+Priority: optional
+Section: devel
+Filename: pool/uz801-edge/l/linux-libc-dev-edge-qcom/linux-libc-dev-edge-qcom_25.11.0-trunk.336_arm64.deb
+Size: 1427520
+SHA256: 1d3a72d87da9474c1e09e7114801e2af2b60cf93441b9ce82962878e0333f6b7
+SHA1: 42e0ada50d689e736a48e2299c71459e75133117
+MD5sum: 0bb2052f1ceebc306c33ec5c0af55cbc
+Description: Armbian Linux support headers for userspace development
+ This package provides userspaces headers from the Linux kernel.  These headers
+ are used by the installed headers for GNU glibc and other system libraries.
+Multi-Arch: same
+Installed-Size: 6795
+Armbian-Original-Hash: 6.17-rc6-Saa28-D0000-P5e5f-Cabf6H3e0d-HK01ba-Vc222-B14f4-R448a
+
