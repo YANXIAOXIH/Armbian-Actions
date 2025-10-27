@@ -23,6 +23,24 @@ on:
         - all
         default: 'all'
 
+      RELEASE_CHOICE:
+        type: choice
+        description: "Which release(s) to build"
+        options:
+        - default_schedule
+        - all
+        - bookworm
+        - bullseye
+        - buster
+        - focal
+        - jammy
+        - noble
+        - oracular
+        - plucky
+        - sid
+        - trixie
+        default: 'default_schedule'
+
       DESKTOP:
         type: choice
         description: "Desktop environment"
@@ -81,7 +99,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  RELEASE: "plucky noble bookworm trixie"
+  DEFAULT_SCHEDULE_RELEASES: "plucky noble trixie"
+  ALL_RELEASES: "bookworm bullseye buster focal jammy noble oracular plucky sid trixie"
   BOARD: "lemonpi som3588-cat ufi001c uz801"
 
 # ====================================================================
@@ -134,11 +153,22 @@ jobs:
       - name: "Set and Log Release Matrix"
         id: set_matrix
         run: |
+          RELEASE_STRING=""
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ inputs.RELEASE_CHOICE }}" == "default_schedule" ]]; then
+            RELEASE_STRING="${{ env.DEFAULT_SCHEDULE_RELEASES }}"
+          elif [[ "${{ inputs.RELEASE_CHOICE }}" == "all" ]]; then
+            RELEASE_STRING="${{ env.ALL_RELEASES }}"
+          else
+            RELEASE_STRING="${{ inputs.RELEASE_CHOICE }}"
+          fi
+          
+          echo "Selected releases to build: ${RELEASE_STRING}"
+
           # Determine which board list to use with a single, unified expression
           BOARD_STRING="${{ (github.event_name == 'schedule' || inputs.BOARD == 'all') && env.BOARD || inputs.BOARD }}"
           
           # Convert space-separated strings from env into JSON arrays for matrix strategies.
-          JSON_RELEASE=$(echo "${{ env.RELEASE }}" | jq -c -R 'split(" ") | map(select(. != ""))')
+          JSON_RELEASE=$(echo "${RELEASE_STRING}" | jq -c -R 'split(" ") | map(select(. != ""))')
           JSON_BOARD=$(echo "${BOARD_STRING}" | jq -c -R 'split(" ") | map(select(. != ""))')
           
           echo "RELEASE=${JSON_RELEASE}" >> $GITHUB_OUTPUT
@@ -195,15 +225,15 @@ jobs:
           sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
           sudo dpkg --list | grep "^rc" | cut -d " " -f 3 | xargs -r sudo dpkg --purge || true
 
-          # Automatically sync rockchip64-6.16 patches to all existing rockchip64-6.* directories under build
+          # Automatically sync rockchip64-6.18 patches to all existing rockchip64-6.* directories under build
           for verdir in ./build/patch/kernel/archive/rockchip64-6.*; do
             if [ -d "$verdir" ]; then
               target=$(basename "$verdir")
               if [ ! -d "./build/patch/kernel/archive/$target" ]; then
                 mkdir -p "./build/patch/kernel/archive/$target"
               fi
-              cp -rf ./custom/Addboard/patch/kernel/archive/rockchip64-6.16/* "./build/patch/kernel/archive/$target/"
-              echo "rockchip64-6.16 patches have been synced to $target"
+              cp -rf ./custom/Addboard/patch/kernel/archive/rockchip64-6.18/* "./build/patch/kernel/archive/$target/"
+              echo "rockchip64-6.18 patches have been synced to $target"
             fi
           done
           
@@ -226,6 +256,7 @@ jobs:
             BUILD_DESKTOP="no" \
             BUILD_MINIMAL="yes" \
             SHARE_LOG="yes" \
+            MANAGE_ACNG="no" \
             BETA="${{ needs.Prepare_Build.outputs.NIGHTLY }}" \
             PREFER_DOCKER="${{ needs.Prepare_Build.outputs.DOCKER }}" \
             EXPERT="yes" \
@@ -307,15 +338,15 @@ jobs:
             echo "DESKTOP_ENVIRONMENT_CONFIG_NAME="config_base"" >> $GITHUB_ENV
           fi
 
-          # Automatically sync rockchip64-6.16 patches to all existing rockchip64-6.* directories under build
+          # Automatically sync rockchip64-6.18 patches to all existing rockchip64-6.* directories under build
           for verdir in ./build/patch/kernel/archive/rockchip64-6.*; do
             if [ -d "$verdir" ]; then
               target=$(basename "$verdir")
               if [ ! -d "./build/patch/kernel/archive/$target" ]; then
                 mkdir -p "./build/patch/kernel/archive/$target"
               fi
-              cp -rf ./custom/Addboard/patch/kernel/archive/rockchip64-6.16/* "./build/patch/kernel/archive/$target/"
-              echo "rockchip64-6.16 patches have been synced to $target"
+              cp -rf ./custom/Addboard/patch/kernel/archive/rockchip64-6.18/* "./build/patch/kernel/archive/$target/"
+              echo "rockchip64-6.18 patches have been synced to $target"
             fi
           done
           
@@ -350,6 +381,7 @@ jobs:
             DESKTOP_ENVIRONMENT_CONFIG_NAME="${{ env.DESKTOP_ENVIRONMENT_CONFIG_NAME }}" \
             ENABLE_EXTENSIONS="${{ needs.Prepare_Build.outputs.ENABLE_EXTENSIONS }}" \
             SHARE_LOG="yes" \
+            MANAGE_ACNG="no" \
             BETA="${{ needs.Prepare_Build.outputs.NIGHTLY }}" \
             PREFER_DOCKER="${{ needs.Prepare_Build.outputs.DOCKER }}" \
             ROOTFS_TYPE="${{ needs.Prepare_Build.outputs.ROOTFS }}" \
