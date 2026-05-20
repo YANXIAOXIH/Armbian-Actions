@@ -1,0 +1,14 @@
+[Unit]
+Description=UFI USB Gadget Configuration
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment="GC_MODE=rndis,ffs"
+ExecStart=/usr/sbin/ufi-usb-manager.sh startup
+Restart=no
+KillMode=process
+TimeoutStopSec=2s
+
+[Install]
+WantedBy=multi-user.target

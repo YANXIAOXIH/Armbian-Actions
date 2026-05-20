@@ -6,9 +6,6 @@ name: "Armbian Build CI"
 #  Defines when this workflow will run.
 # ====================================================================
 on:
-  schedule:
-    - cron: '30 2 * * 2'
-    
   workflow_dispatch:
     inputs:
 
@@ -37,6 +34,7 @@ on:
         - noble
         - oracular
         - plucky
+        - resolute
         - sid
         - trixie
         default: 'default_schedule'
@@ -93,8 +91,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  DEFAULT_SCHEDULE_RELEASES: "plucky noble trixie"
-  ALL_RELEASES: "bookworm bullseye buster focal jammy noble oracular plucky sid trixie"
+  DEFAULT_SCHEDULE_RELEASES: "resolute trixie"
+  ALL_RELEASES: "bookworm bullseye buster focal jammy noble oracular plucky resolute sid trixie"
   BOARD: "lemonpi som3588-cat ufi001c uz801"
 
 # ====================================================================
@@ -130,7 +128,7 @@ jobs:
           echo "ROOTFS: ${{ github.event_name == 'schedule' && 'ext4' || inputs.ROOTFS }}"
 
       - name: "Checkout Build System to get Version"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/build
           path: build
@@ -185,14 +183,14 @@ jobs:
 
     steps:
       - name: "Checkout Board Source"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           clean: false
           path: custom
 
       - name: "Checkout Build System"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/build
           clean: false
@@ -200,7 +198,7 @@ jobs:
           path: build
 
       - name: "Checkout OS Source" 
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/os
           fetch-depth: 0
@@ -254,7 +252,7 @@ jobs:
             VENDOR=Armbian
 
       - name: "Upload Kernel Artifact"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: kernel-debs-${{ matrix.BOARD }}-${{ matrix.BRANCH }}
           path: build/output/debs/*.deb
@@ -277,14 +275,14 @@ jobs:
         
     steps:
       - name: "Checkout Board Source"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           clean: false
           path: custom
 
       - name: "Checkout Build System"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/build
           clean: false
@@ -292,7 +290,7 @@ jobs:
           path: build
 
       - name: "Checkout OS Source"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/os
           fetch-depth: 0
@@ -300,7 +298,7 @@ jobs:
           path: os
 
       - name: "Download Kernel Artifact"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: kernel-debs-${{ matrix.BOARD }}-${{ matrix.BRANCH }}
           path: ./prebuilt-kernel-debs
@@ -380,19 +378,6 @@ jobs:
             VENDOR=Armbian \
             COMPRESS_OUTPUTIMAGE="sha,gpg,xz"
 
-      - name: "Package Flasher for UFI/UZ Devices"
-        if: contains(fromJson('["ufi001c", "uz801"]'), matrix.BOARD)
-        shell: bash
-        run: |
-          cd ./build
-          if [ -f "./extensions/package_ufi001c_flasher.sh" ]; then
-            chmod +x ./extensions/package_ufi001c_flasher.sh
-            sudo ./extensions/package_ufi001c_flasher.sh
-          else
-            echo "::error:: Flasher packaging script not found!"
-            exit 1
-          fi
-
       - name: "Record Successful Image Build Info"
         shell: bash
         run: |
@@ -400,7 +385,7 @@ jobs:
           echo "${{ matrix.BOARD }},${{ matrix.BRANCH }},${{ matrix.RELEASE }},${{ matrix.DESKTOP }}" > matrix-info.txt
 
       - name: "Upload Matrix Info Artifact"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: matrix-info-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
           path: matrix-info.txt
@@ -436,8 +421,8 @@ jobs:
           artifacts: |
             build/output/images/*
           allowUpdates: true
-          removeArtifacts: false
-          replacesArtifacts: false 
+          removeArtifacts: false 
+          replacesArtifacts: true 
           token: ${{ secrets.GITHUB_TOKEN }}
 
   # ====================================================================
@@ -459,12 +444,12 @@ jobs:
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /usr/local/lib/android
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1 
           
       - name: "Download All Artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts/
 

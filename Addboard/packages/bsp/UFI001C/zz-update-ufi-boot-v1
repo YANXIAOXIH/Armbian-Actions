@@ -1,0 +1,174 @@
+#!/bin/bash
+# /etc/kernel/postinst.d/zz-update-ufi-boot
+set -e
+ARG1="$1"
+ARG2="$2"
+
+# Capture version and optional manual DTB path
+if [[ -z "$ARG1" ]]; then
+    KERNEL_VERSION=$(uname -r)
+    MANUAL_DTB=""
+elif [[ "$ARG1" == *.dtb ]]; then
+    KERNEL_VERSION=$(uname -r)
+    MANUAL_DTB="$ARG1"
+else
+    KERNEL_VERSION="$ARG1"
+    if [[ "$ARG2" == /boot/vmlinu* ]]; then
+        MANUAL_DTB=""
+    else
+        MANUAL_DTB="$ARG2"
+    fi
+fi
+
+if [[ -n "$MANUAL_DTB" && "$MANUAL_DTB" != qcom/* && "$MANUAL_DTB" != /* ]]; then
+    MANUAL_DTB="qcom/$MANUAL_DTB"
+fi
+
+echo "--- [UFI Boot Updater] Target Kernel: ${KERNEL_VERSION} ---"
+if [[ -n "$MANUAL_DTB" ]]; then
+    echo "--- [UFI Boot Updater] Target DTB: ${MANUAL_DTB} ---"
+fi
+
+echo "--- [UFI Boot Updater] Building boot image for kernel ${KERNEL_VERSION} ---"
+
+# --- 0. Environment and Dependency Check ---
+if [ ! -x "/usr/bin/mkbootimg" ]; then
+    echo "Fatal Error: mkbootimg not found! Do not reboot."
+    exit 1
+fi
+
+ENV_FILE="/boot/armbianEnv.txt"
+
+if [ -f "$ENV_FILE" ]; then
+    unset fdtfile extraargs rootdev BOOTIMG_CMDLINE_EXTRA
+    source "$ENV_FILE"
+fi
+
+# --- 1. Identify current hardware model ---
+RUNNING_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0')
+echo "Detected hardware: ${RUNNING_MODEL:-Unknown}"
+
+# --- 2. Auto-detection logic ---
+BOARD=""
+if [[ "${RUNNING_MODEL,,}" == *"ufi001c"* ]]; then
+    BOARD="ufi001c"
+elif [[ "${RUNNING_MODEL,,}" == *"ufi003"* ]]; then
+    BOARD="ufi003"
+elif [[ "${RUNNING_MODEL,,}" == *"uz801"* ]]; then
+    BOARD="uz801"
+fi
+
+if [[ "${RUNNING_MODEL,,}" == *"pro"* ]]; then
+    VARIANT="-pro"
+else
+    VARIANT=""
+fi
+
+# Determine default DTB based on hardware
+AUTO_DTB=""
+if [ -n "$BOARD" ]; then
+    if [[ "$BOARD" == "uz801" ]] && [[ -z "$VARIANT" ]]; then
+        AUTO_DTB="qcom/msm8916-yiming-uz801v3.dtb"
+    else
+        AUTO_DTB="qcom/msm8916-thwc-${BOARD}${VARIANT}.dtb"
+    fi
+fi
+
+# --- 3. Determine target DTB ---
+fdtfile_env="$fdtfile"
+
+if [ -n "$MANUAL_DTB" ]; then
+    TARGET_DTB="$MANUAL_DTB"
+    echo "Using manually specified DTB: $TARGET_DTB"
+elif [ -n "$AUTO_DTB" ]; then
+    TARGET_DTB="$AUTO_DTB"
+    echo "Using accurately auto-detected hardware DTB: $TARGET_DTB"
+elif [ -n "$fdtfile_env" ]; then
+    TARGET_DTB="$fdtfile_env"
+    echo "Hardware unknown, using fallback DTB from config: $TARGET_DTB"
+else
+    TARGET_DTB="qcom/msm8916-thwc-ufi001c.dtb"
+    echo "Warning: Nothing matched, defaulting to: $TARGET_DTB"
+fi
+
+if [ -f "$ENV_FILE" ]; then
+    if grep -q "^fdtfile=" "$ENV_FILE"; then
+        if [ "$fdtfile_env" != "$TARGET_DTB" ]; then
+            sed -i "s|^fdtfile=.*|fdtfile=${TARGET_DTB}|" "$ENV_FILE"
+            echo "-> Auto-corrected fdtfile in $ENV_FILE to $TARGET_DTB"
+        fi
+    else
+        echo "fdtfile=${TARGET_DTB}" >> "$ENV_FILE"
+        echo "-> Added fdtfile=${TARGET_DTB} to $ENV_FILE"
+    fi
+fi
+
+# --- 4. Extract Boot Parameters ---
+CURRENT_ROOT=$(cat /proc/cmdline | sed -n 's/.*root=\([^ ]*\).*/\1/p')
+if [ -z "$CURRENT_ROOT" ]; then
+    echo "Fatal Error: Failed to extract root parameter from /proc/cmdline"
+    exit 1
+fi
+RAW_CMDLINE="${BOOTIMG_CMDLINE_EXTRA} root=${CURRENT_ROOT} ${extraargs}"
+CMDLINE=$(echo "$RAW_CMDLINE" | xargs)
+
+# --- 5. Prepare files and package ---
+WORK_DIR=$(mktemp -d)
+trap 'rm -rf -- "$WORK_DIR"' EXIT
+
+REAL_KERNEL=$(ls /boot/vmlinu*-${KERNEL_VERSION} | head -n 1)
+INITRD_FILE="/boot/initrd.img-${KERNEL_VERSION}"
+DTB_PATH="/usr/lib/linux-image-${KERNEL_VERSION}/${TARGET_DTB}"
+
+if [ ! -f "$REAL_KERNEL" ]; then
+    echo "Error: Kernel file not found: $REAL_KERNEL"
+    exit 1
+fi
+if [ ! -f "$DTB_PATH" ]; then
+    echo "Error: DTB file not found: $DTB_PATH"
+    echo "Checking fallback path..."
+    DTB_PATH_ALT="/usr/lib/linux-image-${KERNEL_VERSION}/${TARGET_DTB#qcom/}"
+    if [ -f "$DTB_PATH_ALT" ]; then
+        DTB_PATH="$DTB_PATH_ALT"
+else
+        exit 1
+    fi
+fi
+
+if gzip -t "$REAL_KERNEL" 2>/dev/null; then
+    echo "Kernel is already compressed, copying..."
+    cp "$REAL_KERNEL" "${WORK_DIR}/Image.gz"
+else
+    echo "Compressing raw kernel..."
+gzip -9 -c "$REAL_KERNEL" > "${WORK_DIR}/Image.gz"
+fi
+
+echo "Appending DTB (${DTB_PATH}) to kernel..."
+cat "${WORK_DIR}/Image.gz" "${DTB_PATH}" > "${WORK_DIR}/kernel-dtb"
+
+echo "Generating boot.img..."
+/usr/bin/mkbootimg \
+    --base 0x80000000 \
+    --kernel_offset 0x00080000 \
+    --ramdisk_offset 0x04000000 \
+    --tags_offset 0x03500000 \
+    --pagesize 2048 \
+    --second_offset 0x00f00000 \
+    --ramdisk "${INITRD_FILE}" \
+    --cmdline "${CMDLINE}" \
+    --kernel "${WORK_DIR}/kernel-dtb" \
+    -o "${WORK_DIR}/boot.img"
+
+# --- 6. Flash to boot partition ---
+BOOT_PART="/dev/disk/by-partlabel/boot"
+if [ ! -b "$BOOT_PART" ]; then
+    echo "Fatal Error: Boot partition not found at $BOOT_PART !"
+    exit 1
+fi
+
+echo "Flashing to $BOOT_PART ..."
+dd if="${WORK_DIR}/boot.img" of="$BOOT_PART" bs=4M status=none
+sync
+
+echo "--- [Success] Boot image updated for ${KERNEL_VERSION} using ${TARGET_DTB} ---"
+exit 0

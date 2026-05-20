@@ -1,0 +1,9 @@
+[Unit]
+Description=ADB Daemon
+After=sysinit.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/adbd
+Restart=on-failure
+RestartSec=2s

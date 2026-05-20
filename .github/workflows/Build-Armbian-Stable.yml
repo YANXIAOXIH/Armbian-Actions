@@ -7,7 +7,7 @@ name: "Armbian Build Stable"
 # ====================================================================
 on:
   schedule:
-    - cron: '30 2 * * 5'
+    - cron: '30 2 1-7,15-21 * 5'
     
   workflow_dispatch:
     inputs:
@@ -37,6 +37,7 @@ on:
         - noble
         - oracular
         - plucky
+        - resolute
         - sid
         - trixie
         default: 'default_schedule'
@@ -57,7 +58,7 @@ on:
         - xfce
         - xmonad
         - minimal_and_server
-        default: 'minimal_and_server'
+        default: 'minimal'
 
       ENABLE_EXTENSIONS:
         type: choice
@@ -99,8 +100,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  DEFAULT_SCHEDULE_RELEASES: "plucky noble trixie"
-  ALL_RELEASES: "bookworm bullseye buster focal jammy noble oracular plucky sid trixie"
+  DEFAULT_SCHEDULE_RELEASES: "resolute trixie"
+  ALL_RELEASES: "bookworm bullseye buster focal jammy noble oracular plucky resolute sid trixie"
   BOARD: "lemonpi som3588-cat ufi001c uz801"
 
 # ====================================================================
@@ -138,7 +139,7 @@ jobs:
           echo "ENABLE_EXTENSIONS: ${{ github.event_name == 'schedule' && ' ' || inputs.ENABLE_EXTENSIONS }}"
           
       - name: "Checkout OS Source to get Version"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/os
           path: os
@@ -173,7 +174,6 @@ jobs:
           
           echo "RELEASE=${JSON_RELEASE}" >> $GITHUB_OUTPUT
           echo "BOARD=${JSON_BOARD}" >> $GITHUB_OUTPUT
-          
           echo "--- Release Matrix Generated ---"
           echo "Matrix_RELEASE: ${JSON_RELEASE}"
           echo "Matrix_BOARD: ${JSON_BOARD}"
@@ -194,14 +194,14 @@ jobs:
 
     steps:
       - name: "Checkout Board Source"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           clean: false
           path: custom
 
       - name: "Checkout Build System"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/build
           clean: false
@@ -209,7 +209,7 @@ jobs:
           path: build
 
       - name: "Checkout OS Source" 
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/os
           fetch-depth: 0
@@ -263,7 +263,7 @@ jobs:
             VENDOR=Armbian
 
       - name: "Upload Kernel Artifact"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: kernel-debs-${{ matrix.BOARD }}-${{ matrix.BRANCH }}
           path: build/output/debs/*.deb
@@ -286,14 +286,14 @@ jobs:
         
     steps:
       - name: "Checkout Board Source"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           clean: false
           path: custom
 
       - name: "Checkout Build System"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/build
           clean: false
@@ -301,7 +301,7 @@ jobs:
           path: build
 
       - name: "Checkout OS Source"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: armbian/os
           fetch-depth: 0
@@ -309,7 +309,7 @@ jobs:
           path: os
 
       - name: "Download Kernel Artifact"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: kernel-debs-${{ matrix.BOARD }}-${{ matrix.BRANCH }}
           path: ./prebuilt-kernel-debs
@@ -390,19 +390,6 @@ jobs:
             VENDOR=Armbian \
             COMPRESS_OUTPUTIMAGE="sha,gpg,xz"
 
-      - name: "Package Flasher for UFI/UZ Devices"
-        if: contains(fromJson('["ufi001c", "uz801"]'), matrix.BOARD)
-        shell: bash
-        run: |
-          cd ./build
-          if [ -f "./extensions/package_ufi001c_flasher.sh" ]; then
-            chmod +x ./extensions/package_ufi001c_flasher.sh
-            sudo ./extensions/package_ufi001c_flasher.sh
-          else
-            echo "::error:: Flasher packaging script not found!"
-            exit 1
-          fi
-
       - name: "Record Successful Image Build Info"
         shell: bash
         run: |
@@ -410,7 +397,7 @@ jobs:
           echo "${{ matrix.BOARD }},${{ matrix.BRANCH }},${{ matrix.RELEASE }},${{ matrix.DESKTOP }}" > matrix-info.txt
 
       - name: "Upload Matrix Info Artifact"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: matrix-info-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
           path: matrix-info.txt
@@ -424,8 +411,8 @@ jobs:
           artifacts: |
             build/output/images/*
           allowUpdates: true
-          removeArtifacts: false
-          replacesArtifacts: false 
+          removeArtifacts: false 
+          replacesArtifacts: true 
           token: ${{ secrets.GITHUB_TOKEN }}
 
   # ====================================================================
@@ -439,7 +426,7 @@ jobs:
 
     steps:
       - name: "Download All Artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts/
 
@@ -518,19 +505,10 @@ jobs:
 
     steps:
       - name: "Download all kernel DEB packages"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: kernel-debs-*
           path: artifacts/debs
-
-      - name: "Download MonitorPanel DEB fpackages"
-        uses: dsaltares/fetch-gh-release-asset@1.1.0
-        continue-on-error: true
-        with:
-          repo: 'YANXIAOXIH/MonitorPanel'
-          version: 'latest'    
-          file: 'monitorpanel-.*_arm64.deb'
-          target: 'artifacts/debs/monitorpanel/monitorpanel.deb' 
 
       - name: "Import GPG Key"
         uses: crazy-max/ghaction-import-gpg@v6
@@ -588,25 +566,6 @@ jobs:
             done
           done
 
-      - name: "Add MonitorPanel DEB package to 'main' component"
-        shell: bash
-        run: |
-          MONITOR_DEB_FILE="artifacts/debs/monitorpanel/monitorpanel.deb"
-
-          if [ -s "$MONITOR_DEB_FILE" ]; then
-            echo "--- Processing MonitorPanel package ---"
-            for codename in $RELEASE; do
-              echo "Adding MonitorPanel to distribution '${codename}' component 'main'"
-              reprepro -b repo/ -V -C main includedeb ${codename} "$MONITOR_DEB_FILE"
-              if [ $? -ne 0 ]; then
-                  echo "::error::reprepro failed for ${codename}/main with MonitorPanel package"
-                  exit 1
-              fi
-            done
-          else
-            echo "::warning::MonitorPanel DEB package not found or empty, skipping."
-          fi
-
       - name: "Deploy repository to GitHub Pages"
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -614,4 +573,3 @@ jobs:
           publish_dir: ./repo
           publish_branch: apt-repo
           force_orphan: true
-          

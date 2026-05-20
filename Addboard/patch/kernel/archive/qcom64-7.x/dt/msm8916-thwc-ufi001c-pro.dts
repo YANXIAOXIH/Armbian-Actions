@@ -1,0 +1,229 @@
+// SPDX-License-Identifier: GPL-2.0-only
+
+/dts-v1/;
+
+#include "msm8916-ufi.dtsi"
+
+/ {
+	model = "UFI001C PRO 4G Modem Stick";
+	compatible = "thwc,ufi001c", "qcom,msm8916";
+
+	leds {
+		compatible = "gpio-leds";
+
+		pinctrl-0 = <&gpio_leds_default>;
+		pinctrl-names = "default";
+
+		/*
+		 * GPIOs are board-specific.
+		 * Functions and default-states defined here are fallbacks.
+		 * Feel free to override them if your board is different.
+		 */
+		led_r: led-r {
+			color = <LED_COLOR_ID_RED>;
+			default-state = "off";
+			function = LED_FUNCTION_PANIC;
+		};
+
+		led_g: led-g {
+			color = <LED_COLOR_ID_GREEN>;
+			default-state = "off";
+			function = LED_FUNCTION_WLAN;
+		};
+
+		led_b: led-b {
+			color = <LED_COLOR_ID_BLUE>;
+			default-state = "off";
+			function = LED_FUNCTION_CPU;
+		};
+	};
+
+	cpu_opp_table: opp-table-cpu {
+		compatible = "operating-points-v2";
+		nvmem-cells = <&speedbin_efuse>;
+		opp-shared;
+
+		/* 200 MHz */
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+			opp-microvolt = <900000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 400 MHz */
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <950000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 800 MHz */
+		opp-800000000 {
+			opp-hz = /bits/ 64 <800000000>;
+			opp-microvolt = <1050000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 998.4 MHz */
+		opp-998400000 {
+			opp-hz = /bits/ 64 <998400000>;
+			opp-microvolt = <1150000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 1094.4 MHz */
+        opp-1094400000 {
+			opp-hz = /bits/ 64 <1094400000>;
+			opp-microvolt = <1175000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 1209.6 MHz */
+        opp-1209600000 {
+			opp-hz = /bits/ 64 <1209600000>;
+			opp-microvolt = <1225000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 1363.2 MHz */
+		opp-1363200000 {
+			opp-hz = /bits/ 64 <1363200000>;
+			opp-microvolt = <1275000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 1401.6 MHz */
+		opp-1401600000 {
+			opp-hz = /bits/ 64 <1401600000>;
+			opp-microvolt = <1300000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 1612.8 MHz */
+		opp-1612800000 {
+			opp-hz = /bits/ 64 <1612800000>;
+			opp-microvolt = <1325000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 1843.2 MHz */
+		opp-1843200000 {
+			opp-hz = /bits/ 64 <1843200000>;
+			opp-microvolt = <1350000>;
+			opp-supported-hw = <0xff>;
+		};
+
+		/* 1958.4 MHz */
+		opp-1958400000 {
+			opp-hz = /bits/ 64 <1958400000>;
+			opp-microvolt = <1375000>;
+			opp-supported-hw = <0xff>;
+		};
+	};
+};
+
+&qfprom {
+	compatible = "qcom,msm8916-qfprom", "qcom,qfprom";
+	reg = <0x0005c000 0x1000>;
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	speedbin_efuse: speedbin@c {
+		reg = <0x0c 0x1>;
+		bits = <2 3>;
+	};
+};
+
+&pm8916_l13 {
+    regulator-min-microvolt = <3000000>;
+    regulator-max-microvolt = <3300000>;
+    regulator-always-on; 
+    regulator-allow-set-load;
+};
+
+&cpu0 {
+	operating-points-v2 = <&cpu_opp_table>;
+	nvmem-cells = <&speedbin_efuse>;
+	nvmem-cell-names = "speedbin";
+};
+
+&cpu1 {
+	operating-points-v2 = <&cpu_opp_table>;
+	nvmem-cells = <&speedbin_efuse>;
+	nvmem-cell-names = "speedbin";
+};
+
+&cpu2 {
+	operating-points-v2 = <&cpu_opp_table>;
+	nvmem-cells = <&speedbin_efuse>;
+	nvmem-cell-names = "speedbin";
+};
+
+&cpu3 {
+	operating-points-v2 = <&cpu_opp_table>;
+	nvmem-cells = <&speedbin_efuse>;
+	nvmem-cell-names = "speedbin";
+};
+
+&gpu {
+	nvmem-cells = <&speedbin_efuse>;
+	nvmem-cell-names = "speed_bin";
+	status = "okay";
+};
+
+&button_restart {
+	gpios = <&tlmm 37 GPIO_ACTIVE_HIGH>;
+};
+
+&led_b {
+	gpios = <&tlmm 20 GPIO_ACTIVE_HIGH>;
+};
+
+&led_g {
+	gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
+};
+
+&led_r {
+	gpios = <&tlmm 22 GPIO_ACTIVE_HIGH>;
+};
+
+&mpss {
+	pinctrl-0 = <&sim_ctrl_default>;
+	pinctrl-names = "default";
+};
+
+&button_default {
+	pins = "gpio37";
+	bias-pull-down;
+};
+
+&gpio_leds_default {
+	pins = "gpio20", "gpio21", "gpio22";
+};
+
+/* This selects the external SIM card slot by default */
+&tlmm {
+	sim_ctrl_default: sim-ctrl-default-state {
+		esim-sel-pins {
+			pins = "gpio0", "gpio3";
+			function = "gpio";
+			bias-disable;
+			output-low;
+		};
+
+		sim-en-pins {
+			pins = "gpio1";
+			function = "gpio";
+			bias-disable;
+			output-low;
+		};
+
+		sim-sel-pins {
+			pins = "gpio2";
+			function = "gpio";
+			bias-disable;
+			output-high;
+		};
+	};
+};
+

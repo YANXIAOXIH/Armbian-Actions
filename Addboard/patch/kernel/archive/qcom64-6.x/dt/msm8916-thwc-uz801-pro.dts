@@ -1,0 +1,136 @@
+// SPDX-License-Identifier: GPL-2.0-only
+
+/dts-v1/;
+
+#include "msm8916-ufi.dtsi"
+
+/ {
+	model = "UZ801 PRO 4G Modem Stick";
+	compatible = "thwc,uz801", "qcom,msm8916";
+
+	leds {
+		compatible = "gpio-leds";
+
+		pinctrl-0 = <&gpio_leds_default>;
+		pinctrl-names = "default";
+
+		/*
+		 * GPIOs are board-specific.
+		 * Functions and default-states defined here are fallbacks.
+		 * Feel free to override them if your board is different.
+		 */
+		led_r: led-r {
+			color = <LED_COLOR_ID_RED>;
+			default-state = "off";
+			function = LED_FUNCTION_POWER;
+		};
+
+		led_g: led-g {
+			color = <LED_COLOR_ID_GREEN>;
+			default-state = "off";
+			function = LED_FUNCTION_WAN;
+		};
+
+		led_b: led-b {
+			color = <LED_COLOR_ID_BLUE>;
+			default-state = "off";
+			function = LED_FUNCTION_WLAN;
+		};
+	};
+
+	cpu_opp_table: opp-table-cpu {
+		compatible = "operating-points-v2";
+		opp-shared;
+
+		opp-200000000 {
+			opp-hz = /bits/ 64 <200000000>;
+		};
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+		};
+		opp-800000000 {
+			opp-hz = /bits/ 64 <800000000>;
+		};
+		opp-998400000 {
+			opp-hz = /bits/ 64 <998400000>;
+		};
+        opp-1094400000 {
+			opp-hz = /bits/ 64 <1094400000>;
+		};
+        opp-1209600000 {
+			opp-hz = /bits/ 64 <1209600000>;
+		};
+		opp-1363200000 {
+			opp-hz = /bits/ 64 <1363200000>;
+		};
+		opp-1401600000 {
+			opp-hz = /bits/ 64 <1401600000>;
+		};
+		opp-1621600000 {
+			opp-hz = /bits/ 64 <1621600000>;
+		};
+		opp-1841600000 {
+			opp-hz = /bits/ 64 <1841600000>;
+		};
+		opp-1951600000 {
+			opp-hz = /bits/ 64 <1951600000>;
+		};
+	};
+};
+
+&button_restart {
+	gpios = <&tlmm 23 GPIO_ACTIVE_HIGH>;
+};
+
+&led_b {
+	gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
+};
+
+&led_g {
+	gpios = <&tlmm 8 GPIO_ACTIVE_HIGH>;
+};
+
+&led_r {
+	gpios = <&tlmm 7 GPIO_ACTIVE_HIGH>;
+};
+
+&mpss {
+	pinctrl-0 = <&sim_ctrl_default>;
+	pinctrl-names = "default";
+};
+
+&button_default {
+	pins = "gpio23";
+	bias-pull-down;
+};
+
+&gpio_leds_default {
+	pins = "gpio6", "gpio8", "gpio7";
+};
+
+/* This selects the external SIM card slot by default */
+/* uz801 Not sure if there is */
+&tlmm {
+	sim_ctrl_default: sim-ctrl-default-state {
+		esim-sel-pins {
+			pins = "gpio0", "gpio3";
+			function = "gpio";
+			bias-disable;
+			output-low;
+		};
+
+		sim-en-pins {
+			pins = "gpio1";
+			function = "gpio";
+			bias-disable;
+			output-high;
+		};
+
+		sim-sel-pins {
+			pins = "gpio2";
+			function = "gpio";
+			bias-disable;
+			output-high;
+		};
+	};
+};
