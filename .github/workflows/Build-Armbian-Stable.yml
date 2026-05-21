@@ -184,7 +184,7 @@ jobs:
   Build_Kernel:
     needs: Prepare_Build
     name: "Build Kernel [${{ matrix.BOARD }} ${{ matrix.BRANCH }}]"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 300
     strategy:
       fail-fast: false
@@ -275,7 +275,7 @@ jobs:
   Build_Image:
     name: "Build Image [${{ matrix.BOARD }} ${{ matrix.BRANCH }} ${{ matrix.RELEASE }} ${{ matrix.DESKTOP }}]"
     needs: [Prepare_Build, Build_Kernel]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
