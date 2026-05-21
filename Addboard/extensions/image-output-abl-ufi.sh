@@ -63,8 +63,8 @@ function post_build_image__900_convert_to_abl_img() {
     umount "${MOUNT_DIR}"
     losetup -d "${LOOP_DEV}"
     unset LOOP_DEV
-    e2fsck -p -f "${ROOTFS_RAW}" || [[ $? -lt 4 ]]
-    resize2fs -M "${ROOTFS_RAW}"
+    #e2fsck -p -f "${ROOTFS_RAW}" || [[ $? -lt 4 ]]
+    #resize2fs -M "${ROOTFS_RAW}"
     local block_count=$(dumpe2fs -h "${ROOTFS_RAW}" 2>/dev/null | awk '/Block count:/{print $3}')
     local block_size=$(dumpe2fs -h "${ROOTFS_RAW}" 2>/dev/null | awk '/Block size:/{print $3}')
     truncate -s $((block_count * block_size)) "${ROOTFS_RAW}"
