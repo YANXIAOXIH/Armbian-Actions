@@ -1,0 +1,47 @@
+From cc4abc694fcf2c942410136bc58a61e79bf21e83 Mon Sep 17 00:00:00 2001
+From: Stephan Gerhold <stephan@gerhold.net>
+Date: Sun, 20 Mar 2022 15:54:36 +0100
+Subject: [PATCH] wcn36xx: txrx: Ignore 5 GHz scan packets on WCN3620 for now
+
+It's not clear why it happens but some WCN3620 firmwares seem to
+occasionally seems to send scan packets with rf_band = 0, which is
+currently interpreted like 5 GHz band. This causes big WARNINGs later
+because those bands are not initialized for WCN3620:
+
+WARNING: CPU: 0 PID: 0 at net/mac80211/rx.c:4877 ieee80211_rx_list+0x488/0xa10 [mac80211]
+Hardware name: Samsung Galaxy Grand Prime (SM-G530H) (DT)
+pc : ieee80211_rx_list+0x488/0xa10 [mac80211]
+lr : ieee80211_rx_napi+0x58/0xe0 [mac80211]
+Call trace:
+ ieee80211_rx_list+0x488/0xa10 [mac80211]
+ ieee80211_rx_napi+0x58/0xe0 [mac80211]
+ ieee80211_tasklet_handler+0xe4/0xf0 [mac80211]
+ ...
+
+Let's skip the check for WCN3620 for now and warn only once to avoid
+spam in the kernel log.
+
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+---
+ drivers/net/wireless/ath/wcn36xx/txrx.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
+index 8826998797d678..bd6c4cae84d604 100644
+--- a/drivers/net/wireless/ath/wcn36xx/txrx.c
++++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
+@@ -367,7 +367,13 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 		 */
+ 		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
+ 
+-		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
++		/* FIXME: For some reason WCN3620 sometimes sends packets that
++		 * look like 5 GHz even though it is 2.4 GHz only...
++		 */
++		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1 &&
++		    !DO_ONCE_LITE_IF(wcn->rf_id == RF_IRIS_WCN3620, wcn36xx_warn,
++				     "Received 5 GHz band packet on WCN3620? "
++				     "(rf_band %d, hwch %d)\n", bd->rf_band, hwch)) {
+ 			status.band = NL80211_BAND_5GHZ;
+ 			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
+ 								     status.band);

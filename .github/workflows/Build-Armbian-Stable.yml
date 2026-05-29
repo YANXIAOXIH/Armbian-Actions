@@ -283,7 +283,12 @@ jobs:
         BOARD: ${{ fromJson(needs.Prepare_Build.outputs.BOARD) }} 
         RELEASE: ${{ fromJson(needs.Prepare_Build.outputs.RELEASE) }}
         DESKTOP: ${{ fromJson(needs.Prepare_Build.outputs.DESKTOP) }}
-        
+        exclude:
+        - BOARD: ${{ github.event_name == 'schedule' && 'ufi001c' || 'skip_exclude' }}
+          DESKTOP: server
+        - BOARD: ${{ github.event_name == 'schedule' && 'uz801' || 'skip_exclude' }}
+          DESKTOP: server
+
     steps:
       - name: "Checkout Board Source"
         uses: actions/checkout@v6
