@@ -82,8 +82,8 @@ function post_build_image__900_convert_to_abl_img() {
             /usr/local/bin/mkbootimg \
                 --base 0x80000000 \
                 --kernel_offset 0x00080000 \
-                --ramdisk_offset 0x04000000 \
-                --tags_offset 0x03500000 \
+                --ramdisk_offset 0x08000000 \
+                --tags_offset 0x07500000 \
                 --pagesize 2048 \
                 --second_offset 0x00f00000 \
                 --ramdisk "${initrd}" \
