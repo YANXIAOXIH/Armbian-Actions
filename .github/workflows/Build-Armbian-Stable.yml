@@ -64,7 +64,7 @@ on:
         type: choice
         description: "Armbian extension packages"
         options: [ 'mesa-vpu', ' ' ]
-        default: "mesa-vpu"
+        default: " "
 
       DOCKER:
         type: choice
@@ -220,10 +220,16 @@ jobs:
         shell: bash
         run: |
           # Clean up runner to free up disk space.
+          echo "deb http://archive.ubuntu.com/ubuntu/ noble-proposed main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/noble-proposed.list
+
           sudo apt-get update
           sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* openjdk* mysql* php* mongodb* dotnet* moby* snapd* android* || true
           sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
           sudo dpkg --list | grep "^rc" | cut -d " " -f 3 | xargs -r sudo dpkg --purge || true
+
+          sudo apt install -y gcc-14-aarch64-linux-gnu binutils-aarch64-linux-gnu
+          sudo ln -sf /usr/bin/aarch64-linux-gnu-gcc-14 /usr/bin/aarch64-linux-gnu-gcc
+          sudo ln -sf /usr/bin/aarch64-linux-gnu-g++-14 /usr/bin/aarch64-linux-gnu-g++
 
           # Automatically sync rockchip64-6.18 patches to all existing rockchip64-6.* directories under build
           for verdir in ./build/patch/kernel/archive/rockchip64-6.*; do

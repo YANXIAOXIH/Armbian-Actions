@@ -160,8 +160,8 @@ echo "[INFO] Generating boot.img..."
 /usr/local/bin/mkbootimg \
     --base 0x80000000 \
     --kernel_offset 0x00080000 \
-    --ramdisk_offset 0x04000000 \
-    --tags_offset 0x03500000 \
+    --tags_offset 0x03200000 \
+    --ramdisk_offset 0x03400000 \
     --pagesize 2048 \
     --second_offset 0x00f00000 \
     --ramdisk "${INITRD_FILE}" \
