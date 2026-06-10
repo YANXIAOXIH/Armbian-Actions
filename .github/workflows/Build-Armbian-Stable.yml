@@ -6,8 +6,6 @@ name: "Armbian Build Stable"
 #  Defines when this workflow will run.
 # ====================================================================
 on:
-  schedule:
-    - cron: '30 2 1-7,15-21 * 5'
     
   workflow_dispatch:
     inputs:
