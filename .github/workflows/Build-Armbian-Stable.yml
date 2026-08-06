@@ -230,14 +230,14 @@ jobs:
           sudo ln -sf /usr/bin/aarch64-linux-gnu-g++-14 /usr/bin/aarch64-linux-gnu-g++
 
           # Automatically sync rockchip64-6.18 patches to all existing rockchip64-6.* directories under build
-          for verdir in ./build/patch/kernel/archive/rockchip64-6.*; do
+          for verdir in ./build/patch/kernel/archive/rockchip64-7.*; do
             if [ -d "$verdir" ]; then
               target=$(basename "$verdir")
               if [ ! -d "./build/patch/kernel/archive/$target" ]; then
                 mkdir -p "./build/patch/kernel/archive/$target"
               fi
               cp -rf ./custom/Addboard/patch/kernel/archive/rockchip64-6.18/* "./build/patch/kernel/archive/$target/"
-              echo "rockchip64-6.18 patches have been synced to $target"
+              echo "rockchip64-7.x patches have been synced to $target"
             fi
           done
           
@@ -348,14 +348,14 @@ jobs:
           fi
 
           # Automatically sync rockchip64-6.18 patches to all existing rockchip64-6.* directories under build
-          for verdir in ./build/patch/kernel/archive/rockchip64-6.*; do
+          for verdir in ./build/patch/kernel/archive/rockchip64-7.*; do
             if [ -d "$verdir" ]; then
               target=$(basename "$verdir")
               if [ ! -d "./build/patch/kernel/archive/$target" ]; then
                 mkdir -p "./build/patch/kernel/archive/$target"
               fi
               cp -rf ./custom/Addboard/patch/kernel/archive/rockchip64-6.18/* "./build/patch/kernel/archive/$target/"
-              echo "rockchip64-6.18 patches have been synced to $target"
+              echo "rockchip64-7.x patches have been synced to $target"
             fi
           done
           
