@@ -42,9 +42,9 @@ if [ ! -x "/usr/local/bin/mkbootimg" ]; then
     echo "[INFO] Downloading a compatible version of mkbootimg..."
     mkdir -p /usr/local/bin
 
-    if curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg https://launchpadlibrarian.net/810765814/mkbootimg || \
-       curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg https://ghproxy.net/https://raw.githubusercontent.com/YANXIAOXIH/UFI001C-Armbian/refs/heads/main/modem/mkbootimg || \
-       curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg https://raw.githubusercontent.com/YANXIAOXIH/UFI001C-Armbian/refs/heads/main/modem/mkbootimg; then
+    if curl -fsSL --connect-timeout 15 --max-time 30 --retry 2 -o  /usr/local/bin/mkbootimg https://launchpadlibrarian.net/810765814/mkbootimg || \
+       curl -fsSL --connect-timeout 15 --max-time 30 --retry 2 -o  /usr/local/bin/mkbootimg https://ghproxy.net/https://raw.githubusercontent.com/YANXIAOXIH/UFI001C-Armbian/refs/heads/main/modem/mkbootimg || \
+       curl -fsSL --connect-timeout 15 --max-time 30 --retry 2 -o  /usr/local/bin/mkbootimg https://raw.githubusercontent.com/YANXIAOXIH/UFI001C-Armbian/refs/heads/main/modem/mkbootimg; then
         
         if [ -s "/usr/local/bin/mkbootimg" ]; then
             chmod +x /usr/local/bin/mkbootimg
