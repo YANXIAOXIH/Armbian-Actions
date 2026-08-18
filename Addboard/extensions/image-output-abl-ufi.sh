@@ -10,10 +10,10 @@ function add_host_dependencies__abl_host_deps() {
         mkdir -p /usr/local/bin
         
         local primary_url="https://launchpadlibrarian.net/810765814/mkbootimg"
-        local backup_url="https://ghproxy.net/https://raw.githubusercontent.com/YANXIAOXIH/UFI001C-Armbian/refs/heads/main/modem/mkbootimg"
+        local backup_url="https://raw.githubusercontent.com/YANXIAOXIH/UFI001C-Armbian/refs/heads/main/modem/mkbootimg"
 
-        if curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg "${primary_url}" || \
-           curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg "${backup_url}"; then
+        if curl -fsSL --connect-timeout 15 --max-time 30 --retry 2 -o /usr/local/bin/mkbootimg "${primary_url}" || \
+           curl -fsSL --connect-timeout 15 --max-time 30 --retry 2 -o /usr/local/bin/mkbootimg "${backup_url}"; then
             chmod +x /usr/local/bin/mkbootimg
             display_alert "UFI Build" "mkbootimg installed successfully" "info"
         else
