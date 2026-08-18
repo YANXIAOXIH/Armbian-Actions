@@ -1,0 +1,4 @@
+[Unit]
+Description=Qualcomm remotefs service
+DefaultDependencies=no
+Before=shutdown.target

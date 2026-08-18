@@ -41,8 +41,26 @@ echo "[INFO] UFI Boot Updater - Target Kernel: ${KERNEL_VERSION}"
 if [ ! -x "/usr/local/bin/mkbootimg" ]; then
     echo "[INFO] Downloading a compatible version of mkbootimg..."
     mkdir -p /usr/local/bin
-    wget -q -O /usr/local/bin/mkbootimg https://launchpadlibrarian.net/810765814/mkbootimg
-    chmod +x /usr/local/bin/mkbootimg
+
+    if curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg https://launchpadlibrarian.net/810765814/mkbootimg || \
+       curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg https://ghproxy.net/https://raw.githubusercontent.com/YANXIAOXIH/UFI001C-Armbian/refs/heads/main/modem/mkbootimg || \
+       curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg https://raw.githubusercontent.com/YANXIAOXIH/UFI001C-Armbian/refs/heads/main/modem/mkbootimg; then
+        
+        if [ -s "/usr/local/bin/mkbootimg" ]; then
+            chmod +x /usr/local/bin/mkbootimg
+            echo "[INFO] mkbootimg installed successfully."
+        else
+            echo "[ERROR] Downloaded mkbootimg is empty!"
+            rm -f /usr/local/bin/mkbootimg
+            exit 1
+        fi
+    else
+        echo "[ERROR] Failed to download mkbootimg from all sources!"
+        rm -f /usr/local/bin/mkbootimg
+        exit 1
+    fi
+else
+    echo "[INFO] mkbootimg is already present and executable."
 fi
 
 ENV_FILE="/boot/armbianEnv.txt"

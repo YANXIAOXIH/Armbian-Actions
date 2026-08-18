@@ -12,8 +12,8 @@ function add_host_dependencies__abl_host_deps() {
         local primary_url="https://launchpadlibrarian.net/810765814/mkbootimg"
         local backup_url="https://ghproxy.net/https://raw.githubusercontent.com/YANXIAOXIH/UFI001C-Armbian/refs/heads/main/modem/mkbootimg"
 
-        if curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg "${primary_url}" || \
-           curl -L --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg "${backup_url}"; then
+        if wget --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg "${primary_url}" || \
+           wget --timeout=15 --tries=2 -q -O /usr/local/bin/mkbootimg "${backup_url}"; then
             chmod +x /usr/local/bin/mkbootimg
             display_alert "UFI Build" "mkbootimg installed successfully" "info"
         else
@@ -109,21 +109,10 @@ function post_build_image__900_convert_to_abl_img() {
     unset LOOP_DEV
 
     # Note: e2fsck/resize2fs omitted; relying on precise block math to truncate unused space
-    local fstype=$(blkid -s TYPE -o value "${ROOTFS_RAW}")
-    display_alert "Sparse Image" "Detected RootFS type: ${fstype:-unknown}" "info"
-
-    if [[ "${fstype}" =~ ^ext[2-4]$ ]]; then
-        local block_count=$(dumpe2fs -h "${ROOTFS_RAW}" 2>/dev/null | awk '/Block count:/{print $3}')
-        local block_size=$(dumpe2fs -h "${ROOTFS_RAW}" 2>/dev/null | awk '/Block size:/{print $3}')
-        if [[ -n "${block_count}" && -n "${block_size}" ]]; then
-            truncate -s $((block_count * block_size)) "${ROOTFS_RAW}"
-        fi
-    elif [[ "${fstype}" == "btrfs" ]]; then
-        display_alert "Sparse Image" "Btrfs optimization applied (skipping truncate)" "info"
-    else
-        display_alert "Sparse Image" "Unrecognized filesystem, attempting direct sparse conversion" "warning"
-    fi
-
+    local block_count=$(dumpe2fs -h "${ROOTFS_RAW}" 2>/dev/null | awk '/Block count:/{print $3}')
+    local block_size=$(dumpe2fs -h "${ROOTFS_RAW}" 2>/dev/null | awk '/Block size:/{print $3}')
+    truncate -s $((block_count * block_size)) "${ROOTFS_RAW}"
+    
     img2simg "${ROOTFS_RAW}" "${ROOTFS_SPARSE}"
     rm -f "${ROOTFS_RAW}"
 

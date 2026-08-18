@@ -1,5 +1,7 @@
 [Unit]
 Description=UFI USB Gadget Configuration
+After=NetworkManager.service systemd-networkd.service
+Wants=NetworkManager.service
 
 [Service]
 Type=oneshot
@@ -7,8 +9,7 @@ RemainAfterExit=yes
 Environment="GC_MODE=rndis,ffs"
 ExecStart=/usr/sbin/ufi-usb-manager.sh startup
 Restart=no
-KillMode=process
-TimeoutStopSec=2s
+TimeoutStopSec=5s
 
 [Install]
 WantedBy=multi-user.target

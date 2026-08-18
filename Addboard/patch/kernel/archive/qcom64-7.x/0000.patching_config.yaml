@@ -4,8 +4,8 @@ config: # This is file 'patch/kernel/archive/qcom64-7.x/0000.patching_config.yam
   name: qcom64-7.x
   kind: kernel
   type: mainline # or: vendor
-  branch: linux-7.0.y
-  last-known-good-tag: v7.0.6
+  branch: linux-7.2.y
+  last-known-good-tag: v7.2.0
   maintainers:
     - { github: rpardini, name: Ricardo Pardini, email: ricardo@pardini.net, armbian-forum: rpardini }
 
