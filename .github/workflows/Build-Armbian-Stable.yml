@@ -332,7 +332,7 @@ jobs:
           sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
           sudo apt-get install -y mkbootimg android-sdk-libsparse-utils
           
-          sudo rm -rf /var/lib/apt/lists/*
+          # sudo rm -rf /var/lib/apt/lists/*
           
           # Set build flags based on the desktop type for the compile script.
           if [[ "${{ matrix.DESKTOP }}" == "minimal" ]]; then
