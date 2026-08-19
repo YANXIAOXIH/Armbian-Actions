@@ -332,6 +332,8 @@ jobs:
           sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
           sudo apt-get install -y mkbootimg android-sdk-libsparse-utils
           
+          sudo rm -rf /var/lib/apt/lists/*
+          
           # Set build flags based on the desktop type for the compile script.
           if [[ "${{ matrix.DESKTOP }}" == "minimal" ]]; then
             echo "BUILD_DESKTOP="no"" >> $GITHUB_ENV
@@ -346,8 +348,8 @@ jobs:
             echo "DESKTOP_APPGROUPS_SELECTED="browsers"" >> $GITHUB_ENV
             echo "DESKTOP_ENVIRONMENT_CONFIG_NAME="config_base"" >> $GITHUB_ENV
           fi
-
-          # Automatically sync rockchip64-6.18 patches to all existing rockchip64-6.* directories under build
+          
+          # Automatically sync rockchip64 patches
           for verdir in ./build/patch/kernel/archive/rockchip64-7.*; do
             if [ -d "$verdir" ]; then
               target=$(basename "$verdir")
