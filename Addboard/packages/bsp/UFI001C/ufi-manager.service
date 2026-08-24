@@ -1,0 +1,14 @@
+[Unit]
+Description=UFI MSM8916 Gadget & Auto Network Switcher
+After=NetworkManager.service network.target
+Wants=NetworkManager.service
+
+[Service]
+Type=simple
+Environment="GC_MODE=ncm,ffs"
+ExecStart=/usr/sbin/ufi-manager.sh startup
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

@@ -122,6 +122,7 @@ jobs:
       ROOTFS: ${{ github.event_name == 'schedule' && 'ext4' || inputs.ROOTFS }}
       BOARD: ${{ steps.set_matrix.outputs.BOARD }}
       RELEASE: ${{ steps.set_matrix.outputs.RELEASE }}
+      RELEASE_STRING: ${{ steps.set_matrix.outputs.RELEASE_STRING }}
       VERSION: ${{ steps.get_version.outputs.VERSION }}
 
     steps:
@@ -137,7 +138,7 @@ jobs:
           echo "ENABLE_EXTENSIONS: ${{ github.event_name == 'schedule' && ' ' || inputs.ENABLE_EXTENSIONS }}"
           
       - name: "Checkout OS Source to get Version"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: armbian/os
           path: os
@@ -171,6 +172,7 @@ jobs:
           JSON_BOARD=$(echo "${BOARD_STRING}" | jq -c -R 'split(" ") | map(select(. != ""))')
           
           echo "RELEASE=${JSON_RELEASE}" >> $GITHUB_OUTPUT
+          echo "RELEASE_STRING=${RELEASE_STRING}" >> $GITHUB_OUTPUT
           echo "BOARD=${JSON_BOARD}" >> $GITHUB_OUTPUT
           echo "--- Release Matrix Generated ---"
           echo "Matrix_RELEASE: ${JSON_RELEASE}"
@@ -191,15 +193,26 @@ jobs:
         BOARD: ${{ fromJson(needs.Prepare_Build.outputs.BOARD) }}
 
     steps:
+      - name: "Free Disk Space"
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - name: "Checkout Board Source"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           clean: false
           path: custom
 
       - name: "Checkout Build System"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: armbian/build
           clean: false
@@ -207,7 +220,7 @@ jobs:
           path: build
 
       - name: "Checkout OS Source" 
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: armbian/os
           fetch-depth: 0
@@ -217,19 +230,12 @@ jobs:
       - name: "Setup Kernel Build Environment"
         shell: bash
         run: |
-          # Clean up runner to free up disk space.
-          echo "deb http://archive.ubuntu.com/ubuntu/ noble-proposed main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/noble-proposed.list
-
           sudo apt-get update
-          sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* openjdk* mysql* php* mongodb* dotnet* moby* snapd* android* || true
-          sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
-          sudo dpkg --list | grep "^rc" | cut -d " " -f 3 | xargs -r sudo dpkg --purge || true
-
-          sudo apt install -y gcc-14-aarch64-linux-gnu binutils-aarch64-linux-gnu
+          sudo apt-get install -y gcc-14-aarch64-linux-gnu binutils-aarch64-linux-gnu
           sudo ln -sf /usr/bin/aarch64-linux-gnu-gcc-14 /usr/bin/aarch64-linux-gnu-gcc
           sudo ln -sf /usr/bin/aarch64-linux-gnu-g++-14 /usr/bin/aarch64-linux-gnu-g++
 
-          # Automatically sync rockchip64-6.18 patches to all existing rockchip64-6.* directories under build
+          # Automatically sync rockchip64 patches
           for verdir in ./build/patch/kernel/archive/rockchip64-7.*; do
             if [ -d "$verdir" ]; then
               target=$(basename "$verdir")
@@ -237,11 +243,11 @@ jobs:
                 mkdir -p "./build/patch/kernel/archive/$target"
               fi
               cp -rf ./custom/Addboard/patch/kernel/archive/rockchip64-6.18/* "./build/patch/kernel/archive/$target/"
-              echo "rockchip64-7.x patches have been synced to $target"
+              echo "rockchip64 patches have been synced to $target"
             fi
           done
           
-          # Prepare custom build files by copying them into the build system directory.
+          # Prepare custom build files
           mkdir -p ./build/userpatches
           cp -rf ./custom/Addboard/* ./build
           cp -rf ./os/userpatches/* ./build/userpatches
@@ -267,7 +273,7 @@ jobs:
             VENDOR=Armbian
 
       - name: "Upload Kernel Artifact"
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7
         with:
           name: kernel-debs-${{ matrix.BOARD }}-${{ matrix.BRANCH }}
           path: build/output/debs/*.deb
@@ -294,15 +300,26 @@ jobs:
           DESKTOP: server
 
     steps:
+      - name: "Free Disk Space"
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - name: "Checkout Board Source"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           clean: false
           path: custom
 
       - name: "Checkout Build System"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: armbian/build
           clean: false
@@ -310,7 +327,7 @@ jobs:
           path: build
 
       - name: "Checkout OS Source"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: armbian/os
           fetch-depth: 0
@@ -328,11 +345,7 @@ jobs:
         run: |
           # Clean up the runner to ensure sufficient disk space.
           sudo apt-get update
-          sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* openjdk* mysql* php* mongodb* dotnet* moby* snapd* android* || true
-          sudo -E apt-get -qq autoremove --purge && sudo -E apt-get -qq clean
           sudo apt-get install -y mkbootimg android-sdk-libsparse-utils
-          
-          # sudo rm -rf /var/lib/apt/lists/*
           
           # Set build flags based on the desktop type for the compile script.
           if [[ "${{ matrix.DESKTOP }}" == "minimal" ]]; then
@@ -348,19 +361,7 @@ jobs:
             echo "DESKTOP_APPGROUPS_SELECTED="browsers"" >> $GITHUB_ENV
             echo "DESKTOP_ENVIRONMENT_CONFIG_NAME="config_base"" >> $GITHUB_ENV
           fi
-          
-          # Automatically sync rockchip64 patches
-          for verdir in ./build/patch/kernel/archive/rockchip64-7.*; do
-            if [ -d "$verdir" ]; then
-              target=$(basename "$verdir")
-              if [ ! -d "./build/patch/kernel/archive/$target" ]; then
-                mkdir -p "./build/patch/kernel/archive/$target"
-              fi
-              cp -rf ./custom/Addboard/patch/kernel/archive/rockchip64-6.18/* "./build/patch/kernel/archive/$target/"
-              echo "rockchip64-7.x patches have been synced to $target"
-            fi
-          done
-          
+
           # Prepare build environment with userpatches and the pre-built kernel debs.
           mkdir -p ./build/userpatches ./build/output/debs
           cp -rf ./custom/Addboard/* ./build
@@ -377,6 +378,7 @@ jobs:
         shell: bash
         run: |
           cd ./build
+          
           # Invoke compile script to build the full OS image, using the pre-built kernel.
           ./compile.sh \
             REVISION="${{ needs.Prepare_Build.outputs.VERSION }}" \
@@ -408,23 +410,17 @@ jobs:
           echo "${{ matrix.BOARD }},${{ matrix.BRANCH }},${{ matrix.RELEASE }},${{ matrix.DESKTOP }}" > matrix-info.txt
 
       - name: "Upload Matrix Info Artifact"
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7
         with:
           name: matrix-info-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
           path: matrix-info.txt
 
-      - name: "Upload Image to GitHub Release"
-        uses: ncipollo/release-action@v1
-        if: success()
+      - name: "Upload Image Artifact"
+        uses: actions/upload-artifact@v7
         with:
-          tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
-          name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
-          artifacts: |
-            build/output/images/*
-          allowUpdates: true
-          removeArtifacts: false 
-          replacesArtifacts: true 
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: images-${{ matrix.BOARD }}-${{ matrix.BRANCH }}-${{ matrix.RELEASE }}-${{ matrix.DESKTOP }}
+          path: build/output/images/*
+          if-no-files-found: error
 
   # ====================================================================
   # JOB 3: Publish GitHub Release
@@ -433,7 +429,7 @@ jobs:
     name: "Publish GitHub Release"
     runs-on: ubuntu-latest
     needs: [Prepare_Build, Build_Image]
-    if: always() 
+    if: success()
 
     steps:
       - name: "Download All Artifacts"
@@ -447,13 +443,14 @@ jobs:
           # Simplify kernel .deb filenames for a cleaner release page.
           set -eo pipefail
           echo "--- Simplifying linux-*.deb filenames for release ---"
-          find artifacts/kernel-debs-*/ -type f -name 'linux-*.deb' | while read -r filepath; do
+          find artifacts/kernel-debs-*/ -type f -name 'linux-*.deb' 2>/dev/null | while read -r filepath; do
             dir=$(dirname "$filepath"); old_name=$(basename "$filepath")
             new_name=$(echo "$old_name" | sed -E 's/^(.*__[0-9.]+).*\.deb$/\1.deb/')
             if [[ "$old_name" != "$new_name" ]]; then mv -v "$filepath" "$dir/$new_name"; fi
           done
-          echo "--- Final list of kernel packages after simplification ---"
-          ls -R artifacts/kernel-debs-*/
+
+          #echo "--- Final list of kernel packages after simplification ---"
+          #ls -R artifacts/kernel-debs-*/
           
       - name: "Generate Release Body"
         id: generate_body
@@ -464,6 +461,7 @@ jobs:
           BUILT_BRANCHES=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f2 | sort -u | paste -sd ", " -)
           BUILT_RELEASES=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f3 | sort -u | paste -sd ", " -)
           BUILT_DESKTOPS=$(find artifacts/matrix-info* -name "*.txt" -print0 | xargs -0 cat | cut -d',' -f4 | sort -u | paste -sd ", " -)
+
           echo "
             <p align='center'>
             <a href='https://www.armbian.com'>
@@ -488,17 +486,18 @@ jobs:
             <br>
              
             </p>" > body.html
-      - name: "Publish Final Release and Kernel Packages"
+
+      - name: "Publish Final Release with All Assets"
         uses: ncipollo/release-action@v1
-        if: success()
         with:
           tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           artifacts: |
             artifacts/kernel-debs-*/linux-*.deb
+            artifacts/images-*/*
           allowUpdates: true
           removeArtifacts: false
-          replacesArtifacts: false 
+          replacesArtifacts: true 
           token: ${{ secrets.GITHUB_TOKEN }}
           bodyFile: "body.html"
 
@@ -508,11 +507,12 @@ jobs:
   Update_APT_Repo:
     name: "Update APT Repository"
     runs-on: ubuntu-latest
-    needs: [Publish_Release]
+    needs: [Prepare_Build, Publish_Release]
     if: success()
     env:
       # Expose GPG Key ID for the reprepro script to use for signing.
       GPG_KEY_ID: ${{ secrets.GPG_SIGNING_KEY_ID }}
+      RELEASES: ${{ needs.Prepare_Build.outputs.RELEASE_STRING }}
 
     steps:
       - name: "Download all kernel DEB packages"
@@ -540,11 +540,12 @@ jobs:
           # The repo components are derived from the kernel artifact names (e.g., lemonpi-edge).
           COMPONENTS="main"
           for dir in artifacts/debs/kernel-debs-*/; do
+            [ -d "$dir" ] || continue
             variant=$(basename "$dir" | sed 's/kernel-debs-//')
             COMPONENTS="${COMPONENTS} ${variant}"
           done
           
-          for codename in $RELEASE; do
+          for codename in $RELEASES; do
             echo "Generating config for $codename with components:${COMPONENTS}"
             cat <<EOF >> repo/conf/distributions
           Origin: Armbian
@@ -557,6 +558,7 @@ jobs:
 
           EOF
           done
+          
           echo "--- APT distributions config ---"
           cat repo/conf/distributions
 
@@ -565,9 +567,10 @@ jobs:
         run: |
           # Use reprepro to add all built .deb packages to the repository.
           for deb_dir in artifacts/debs/kernel-debs-*/; do
+            [ -d "$deb_dir" ] || continue
             component=$(basename "$deb_dir" | sed 's/kernel-debs-//')
             echo "--- Processing packages from ${deb_dir} for component: ${component} ---"
-            for codename in $RELEASE; do
+            for codename in $RELEASES; do
               echo "Adding packages to distribution '${codename}' component '${component}'"
               reprepro -b repo/ -V --ignore=wrongdistribution -C ${component} includedeb ${codename} ${deb_dir}/*.deb
               if [ $? -ne 0 ]; then

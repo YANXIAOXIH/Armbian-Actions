@@ -2,7 +2,7 @@
 
 function add_host_dependencies__abl_host_deps() {
     # Append required packages for processing sparse images and decompression
-    declare -g EXTRA_BUILD_DEPS="${EXTRA_BUILD_DEPS} android-sdk-libsparse-utils xz-utils wget"
+    declare -g EXTRA_BUILD_DEPS="${EXTRA_BUILD_DEPS} android-sdk-libsparse-utils xz-utils"
 
     # Check and install mkbootimg tool if missing on the build host
     if [[ ! -x "/usr/local/bin/mkbootimg" ]]; then
