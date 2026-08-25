@@ -442,16 +442,22 @@ jobs:
         run: |
           # Simplify kernel .deb filenames for a cleaner release page.
           set -eo pipefail
-          echo "--- Simplifying linux-*.deb filenames for release ---"
+          mkdir -p release_assets/kernels release_assets/images
+          echo "--- Consolidating Kernel DEBs ---"
           find artifacts/kernel-debs-*/ -type f -name 'linux-*.deb' 2>/dev/null | while read -r filepath; do
-            dir=$(dirname "$filepath"); old_name=$(basename "$filepath")
+            old_name=$(basename "$filepath")
             new_name=$(echo "$old_name" | sed -E 's/^(.*__[0-9.]+).*\.deb$/\1.deb/')
-            if [[ "$old_name" != "$new_name" ]]; then mv -v "$filepath" "$dir/$new_name"; fi
+            cp -u "$filepath" "release_assets/kernels/$new_name"
           done
 
-          #echo "--- Final list of kernel packages after simplification ---"
-          #ls -R artifacts/kernel-debs-*/
+          echo "--- Consolidating Images ---"
+          find artifacts/images-*/ -type f 2>/dev/null | while read -r img; do
+            cp -u "$img" "release_assets/images/"
+          done
           
+          echo "Final unique kernel files to upload:"
+          ls -lh release_assets/kernels/
+
       - name: "Generate Release Body"
         id: generate_body
         shell: bash
@@ -488,13 +494,13 @@ jobs:
             </p>" > body.html
 
       - name: "Publish Final Release with All Assets"
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.20.0
         with:
           tag: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           name: "Armbian_V${{ needs.Prepare_Build.outputs.VERSION }}"
           artifacts: |
-            artifacts/kernel-debs-*/linux-*.deb
-            artifacts/images-*/*
+            release_assets/kernels/*
+            release_assets/images/*
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true 
@@ -551,7 +557,7 @@ jobs:
           Origin: Armbian
           Label: Armbian
           Codename: ${codename}
-          Architectures: arm64
+          Architectures: arm64 all
           Components: ${COMPONENTS}
           Description: Custom APT repository for Armbian
           SignWith: ${{ env.GPG_KEY_ID }}
@@ -570,9 +576,12 @@ jobs:
             [ -d "$deb_dir" ] || continue
             component=$(basename "$deb_dir" | sed 's/kernel-debs-//')
             echo "--- Processing packages from ${deb_dir} for component: ${component} ---"
+            
+            ls "${deb_dir}"/*.deb >/dev/null 2>&1 || continue
+
             for codename in $RELEASES; do
               echo "Adding packages to distribution '${codename}' component '${component}'"
-              reprepro -b repo/ -V --ignore=wrongdistribution -C ${component} includedeb ${codename} ${deb_dir}/*.deb
+              reprepro -b repo/ -V --ignore=wrongdistribution --ignore=wrongarchitecture -C ${component} includedeb ${codename} "${deb_dir}"/*.deb
               if [ $? -ne 0 ]; then
                   echo "::error::reprepro failed for ${codename}/${component} with packages from ${deb_dir}"
                   exit 1
