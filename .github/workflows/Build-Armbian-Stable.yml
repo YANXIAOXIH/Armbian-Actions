@@ -608,9 +608,13 @@ jobs:
             done
           done
 
+# ---------------------------------------------------------------
+      # 2. 构建 Alpine 源 (修复 EOF 缩进语法错误)
+      # ---------------------------------------------------------------
       - name: "Setup and Populate Alpine Repository"
         shell: bash
         run: |
+          # 1. 载入 Alpine 私钥并导出公钥
           HAS_ALPINE_KEY="false"
           if [ -n "${{ secrets.ALPINE_PRIVATE_KEY }}" ]; then
             echo "${{ secrets.ALPINE_PRIVATE_KEY }}" > /tmp/alpine.rsa
@@ -658,17 +662,18 @@ jobs:
 
             APK_NAME="linux-${BRANCH}-${FAMILY}"
 
-            cat <<EOF > "$TMP_ROOT/.PKGINFO"
-            pkgname = ${APK_NAME}
-            pkgver = ${REAL_KVER}-r0
-            pkgdesc = Universal Linux Kernel (${BRANCH}) and DTBs for ${FAMILY}
-            url = ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}
-            builddate = $(date +%s)
-            packager = GitHub Actions (${GITHUB_ACTOR})
-            size = $(du -sb "$TMP_ROOT" | cut -f1)
-            arch = aarch64
-            origin = ${APK_NAME}
-            EOF
+            # 【修复点】：改用结构化代码块写入 .PKGINFO，杜绝 EOF 缩进问题
+            {
+              echo "pkgname = ${APK_NAME}"
+              echo "pkgver = ${REAL_KVER}-r0"
+              echo "pkgdesc = Universal Linux Kernel (${BRANCH}) and DTBs for ${FAMILY}"
+              echo "url = ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+              echo "builddate = $(date +%s)"
+              echo "packager = GitHub Actions (${GITHUB_ACTOR})"
+              echo "size = $(du -sb "$TMP_ROOT" | cut -f1)"
+              echo "arch = aarch64"
+              echo "origin = ${APK_NAME}"
+            } > "$TMP_ROOT/.PKGINFO"
 
             TARGET_DIRS=""
             for d in boot lib usr etc; do
@@ -679,12 +684,14 @@ jobs:
             rm -rf "$TMP_ROOT"
           done
 
+          # 3. 签名生成 APKINDEX 索引
           for fam_dir in ./repo/alpine/*; do
             ARCH_DIR="$fam_dir/aarch64"
             if [ -d "$ARCH_DIR" ]; then
               cd "$ARCH_DIR"
               if ls *.apk >/dev/null 2>&1; then
                 if [ "$HAS_ALPINE_KEY" = "true" ]; then
+                  echo "使用独立 Secret 密钥签名 $(basename "$fam_dir") 的 APKINDEX..."
                   apk.static index -k /tmp/alpine.rsa -o APKINDEX.tar.gz *.apk
                 else
                   apk.static index -o APKINDEX.tar.gz *.apk
@@ -694,8 +701,8 @@ jobs:
             fi
           done
 
+          # 清理临时私钥实体
           rm -f /tmp/alpine.rsa
-
       # ---------------------------------------------------------------
       # 3. 部署到 GitHub Pages
       # ---------------------------------------------------------------
