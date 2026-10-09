@@ -640,7 +640,8 @@ jobs:
             )
 
             [ "$HAS_ALPINE_KEY" = "true" ] && MKPKG_ARGS+=(--sign-key /tmp/alpine.rsa)
-
+            
+            rm -rf "$TMP_ROOT/etc" "$TMP_ROOT/usr/share" "$TMP_ROOT"/boot/System.map-* "$TMP_ROOT"/boot/config-*
             apk.static mkpkg "${MKPKG_ARGS[@]}"
             echo "Successfully generated APK: $OUTPUT_APK"
 
